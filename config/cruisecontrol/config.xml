@@ -1,0 +1,32 @@
+<cruisecontrol>
+    <property file="config.properties"/>
+    <project name="brewery" buildafterfailed="true">
+        <listeners>
+            <currentbuildstatuslistener file="logs/${project.name}/status.txt"/>
+        </listeners>
+        <modificationset quietperiod="${qp.interval}">
+            <svn RepositoryLocation="${svn.svnrepo.location}"/>
+        </modificationset>
+        <schedule interval="${interval}">
+            <ant anthome="${cc.ant.dir}" buildfile="build-${project.name}.xml"/>
+        </schedule>
+        <log dir="logs/${project.name}">
+	      <merge dir="projects/${project.name}/target/reports"/>
+        </log>        
+		<publishers>
+	      <artifactspublisher dir="projects/${project.name}/target/reports" dest="artifacts/${project.name}"/>
+		    <htmlemail 
+		      css="./webapps/cruisecontrol/css/cruisecontrol.css"
+		      mailhost="${mail.host}" 
+		      xsldir="./webapps/cruisecontrol/xsl" 
+		      returnaddress="cruisecontrol@localhost" 
+		      buildresultsurl="${build.server.url}" 
+		      mailport="25" 
+		      reportsuccess="always"
+		      spamwhilebroken="false">
+		      <always address="${always.email}"/>
+			  <failure address="${always.email}" reportWhenFixed="true"/>
+            </htmlemail>
+        </publishers>		
+	</project>    
+</cruisecontrol>

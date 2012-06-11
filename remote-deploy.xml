@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project name="remote-deployment" default="remote-deploy" basedir=".">
+
+  <property file="local.properties" />
+  <property file="test-env.properties" />
+  <property file="default.properties" />
+  <import file="${basedir}/_common-configuration.xml" />  
+
+  <target name="remote-deploy" depends="recreate-database" />
+  <target name="recreate-database" depends="compile, create-database, create-tables, insert-data, refresh-tomcat"/>
+
+  <target name="compile">
+    <!--<echoproperties/>-->
+    <ant inheritAll="true" inheritRefs="true" antfile="_repository.xml" target="get-deps" />
+    <mkdir dir="${classes.dir}"/>
+    <javac destdir="${classes.dir}" debug="true">
+      <src path="${src.dir}" />
+      <classpath refid="project.class.path"/>
+    </javac>
+  </target>
+  
+  <target name="create-database">    
+    <sql driver="${db.driver}"
+      url="${db.url.system}" 
+      userid="${db.username.system}"
+      password="${db.password.system}"
+      delimiter=";"
+	  src="${database.dir}/create-database-mysql.sql"> 	  
+      <classpath>
+        <pathelement location="${mysql-connector.jar}"/>
+      </classpath>
+    </sql>
+  </target>
+
+  <target name="create-tables">
+    <sql driver="${db.driver}"
+      url="${db.url}" 
+      userid="${db.username}"
+      password="${db.password}"
+      delimiter=";"
+      src="${database.dir}/create-tables-mysql.sql"> 
+      <classpath>
+        <pathelement location="${mysql-connector.jar}"/>
+      </classpath>
+    </sql>
+  </target> 
+
+  <target name="insert-data">
+    <sql driver="${db.driver}"
+      url="${db.url}"
+      userid="${db.username}"
+      password="${db.password}"
+      delimiter=";"
+      src="${database.dir}/insert-data.sql">
+      <classpath>
+        <pathelement location="${mysql-connector.jar}"/>
+      </classpath>
+    </sql>
+  </target>
+  
+  <target name="copy-tomcat-config">
+    <scp file="${target.dir}/${war.file}" 
+    trust="true" 
+    todir="${ssh.server.username}:${ssh.server.password}@${ssh.server.hostname}:${tomcat.home}/webapps" />
+  </target>
+  
+  <target name="remote-tomcat-stop">
+    <echo message="Stopping Tomcat server at ${ssh.server.hostname}..." />
+    <sshexec host="${ssh.server.hostname}" 
+	port="${ssh.port}" 	
+	trust="true" 
+	username="${ssh.server.username}" 
+	password="${ssh.server.password}" 
+	verbose="true" 
+	command="net stop tomcat5" />
+    <sleep seconds="7" />
+  </target>
+  
+  <target name="remote-tomcat-start">
+    <echo message="Starting Tomcat server at ${ssh.server.hostname}..." />
+    <sshexec host="${ssh.server.hostname}" 
+	port="${ssh.port}" 
+	trust="true" 
+	username="${ssh.server.username}" 
+	password="${ssh.server.password}" 
+	verbose="true" 
+	command="net start tomcat5" />
+	<sleep seconds="15" />
+  </target>
+
+  <target name="refresh-tomcat" depends="remote-tomcat-stop">
+    <delete file="${tomcat.home}/webapps/${war.file}" includeEmptyDirs="true" quiet="false" failonerror="true" />
+    <delete includeEmptyDirs="true" quiet="true" failonerror="false">
+      <fileset dir="${tomcat.home}/webapps/brewery" includes="**/*"/>
+    </delete>
+    <delete dir="${tomcat.home}/webapps/brewery" includeEmptyDirs="true" />
+	<antcall target="war" />
+	<antcall target="copy-tomcat-config" />
+	<antcall target="remote-tomcat-start" />
+  </target>
+
+  <target name="war">     
+    <copy todir="${classes.dir}">
+	  <fileset dir="${src.dir}">
+	    <include name="**/*" />
+	  </fileset>
+	</copy>
+	<war destfile="${target.dir}/${war.file}" webxml="${basedir}/config/xml/web.xml">
+	  <fileset dir="${src.dir}" />
+	  <fileset dir="${src.dir}/web" />
+	  <lib dir="${lib.dir}" />
+	  <classes dir="${classes.dir}" />
+    </war>
+  </target>
+
+</project>

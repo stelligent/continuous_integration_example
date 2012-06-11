@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<project name="UpdateUtilityAntBuildFile" default="" basedir="${basedir}">
+     <description>
+         This is the build.xml run by AntInstaller for the Update/Updgrade Utility
+     </description>
+     <tstamp>
+          <format property="touch.time" pattern="yyyy-MM-dd-HH-mm" />
+     </tstamp>
+
+     <!-- this is required to pick up the properties generated during the install pages -->
+     <property file="${basedir}/ant.install.properties" />
+
+     <target name="auto-update">
+          <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+                    <echo />
+                    <echo />
+                    <echo />
+                    <echo />
+                    <echo />
+                    <echo>Installed Brewery Application</echo>
+                    <echo />
+                    <echo />
+                    <echo />
+                    <echo />
+                    <echo />
+     </target>
+
+     <target name="cleanuptarget" />
+     
+</project>

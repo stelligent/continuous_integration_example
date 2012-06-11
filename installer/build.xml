@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<!--
+
+Ant script for creating self-extracting antinstaller program for Brewery
+
+To run, type ant from the command line
+
+-->
+<project name="brewery-installer" default="run" basedir="..">
+
+     <property name="updater.basedir" value="${basedir}/installer" />
+	 <property name="target.dir" value="${updater.basedir}/target" />
+     <property name="updater.dist.dir" value="${target.dir}/dist" />
+     <property name="updater.build.dir" value="${target.dir}/build" />
+     <property name="updater.cofig.dir" value="${updater.basedir}/config" />
+     <property name="updater.lib.dir" value="${updater.basedir}/lib" />
+     <property name="updater.ext.dir" value="${updater.basedir}/ext" />
+     <property name="updater.test.dir" value="${updater.basedir}/test" />
+
+	 <!-- This file should either not exist or contain a property that points to a valid ./antlib${ant.lib.version} directory -->
+     <property file="${updater.basedir}/version.properties" />
+
+     <!-- used to configure the updater build -->
+     <property file="${updater.basedir}/updater.properties" />
+
+     <property name="build.dir" location="${basedir}/build" />
+     <property name="build.classes.dir" location="${build.dir}/classes" />
+     <property name="build.deploy.dir" location="${build.dir}/deploy" />
+     <property name="build.deploy.unexploded.dir" location="${build.deploy.dir}/unexploded" />
+     <property name="database.dir" location="database" />
+     <property name="docs.dir" location="docs" />
+
+     <path id="taskdef.cp">
+          <fileset dir="${updater.basedir}/lib">
+               <include name="ant-installer-ext.jar" />
+               <include name="ant-installer.jar" />
+          </fileset>
+     </path>
+
+     <target name="_set-version" if="antlib.missing" depends="_check-version">
+          <property name="ant.lib.version" value="" />
+     </target>
+     <target name="_check-version">
+          <condition property="antlib.missing">
+               <not>
+                    <available file="antlib${ant.lib.version}" />
+               </not>
+          </condition>
+     </target>
+
+     <target name="selfextract" depends="clean, _set-version, build:installpack.zip, prepare-installer-cp">
+          <echo message="*** *** Building brewery-installer.jar *** *** " />
+          <echo message="*** ***" />  		  
+		  <mkdir dir="${target.dir}" />
+          <taskdef name="installer" classname="org.tp23.antinstaller.taskdefs.Installer" classpathref="taskdef.cp" />
+
+
+          <installer file="${updater.dist.dir}/${installer.file.name}"
+                     compress="true"
+                     extractType="SelfExtractor"
+                     installConfig="${updater.cofig.dir}/${installer.installConfig.name}"
+                     buildFile="${updater.cofig.dir}/${installer.buildFile.name}"
+                     antInstallLib="${updater.basedir}/lib"
+                     antLib="${updater.basedir}/antlib${ant.lib.version}"
+                     validateConfig="true"
+                     failOnError="true"
+                     icons="eclipse"
+                     duplicate="preserve">
+               <fileset dir="${updater.dist.dir}"
+                        includes="installpack.zip"
+                        description="The update artifacts and used by installer's build script" />
+               <fileset dir="${updater.build.dir}"
+                        includes="resources/*"
+                        description="Used by installer antinstall-config.xml" />
+               <zipgroupfileset dir="${updater.basedir}/antlib${ant.lib.version}"
+                                includes="*.jar"
+                                excludes="ant.jar, ant-launcher.jar"
+                                description="Used by installers build script" />
+               <zipgroupfileset dir="${basedir}/lib"
+                                includes="ant-contrib.jar"
+                                description="Used by installers build script" />
+               <zipgroupfileset dir="${basedir}/lib"
+                                includes="ojdbc14.jar"
+                                description="Used by installers build script" />
+               <zipgroupfileset dir="${updater.basedir}/ext"
+                                includes="jaxen-1.1.1.jar, xmlconfig.jar, jdom.jar"
+                                description="Used by installers build script to perform XML file manipulation w/in Ant (levent gurses)" />
+          </installer>
+     </target>
+
+     <target name="clean">
+          <echo message="*** *** Cleaning updater artifacts *** *** " />
+          <echo message="*** ***" />
+          <delete dir="${updater.dist.dir}" />
+          <delete dir="${updater.build.dir}" />
+          <delete file="${updater.basedir}/artifacts/installpack.zip" failonerror="false" />
+          <delete file="${updater.basedir}/artifacts/brewery-installer.jar" failonerror="false" />
+     </target>
+
+     <target name="prepare-installer-cp">
+          <property name="ant-contrib.jar" value="${basedir}/lib/ant-contrib.jar" />
+          <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${ant-contrib.jar}" />
+
+          <delete dir="${updater.build.dir}/resources"/>
+          <mkdir dir="${updater.build.dir}/resources"/>
+          <loadfile property="brewery_release_notes.txt" srcfile="${docs.dir}/brewery_release_notes.txt" />
+          <post to="http://txt2html.sourceforge.net/cgi-bin/txt2html.cgi"
+                verbose="false"
+                logfile="${updater.build.dir}/resources/brewery_release_notes.html"
+                failonerror="true">
+               <prop name="text" value="${brewery_release_notes.txt}" />
+          
+          </post>
+          <available file="${updater.build.dir}/resources/brewery_release_notes.html" property="brewery_release_notes.html.not.present"/>
+          <fail message="Unable to have release notes translated to html using a website" unless="brewery_release_notes.html.not.present"/>
+          <replace file="${updater.build.dir}/resources/brewery_release_notes.html" token="txt2html" value="brewery Release Notes"/>
+          <copy file="${basedir}/LICENSE.txt" todir="${updater.build.dir}/resources" />
+          <copy file="${docs.dir}/brewery_release_notes.txt" todir="${updater.build.dir}/resources" />
+          <copy file="${updater.basedir}/config/images/guinness.png" todir="${updater.build.dir}/resources" />
+          <copy file="${updater.basedir}/config/images/guinness.png" todir="${updater.build.dir}/resources" />
+          <copy file="${updater.basedir}/config/images/guinness.png"
+                tofile="${updater.build.dir}/resources/extract-image.png" />
+     </target>
+
+     <target name="build:installpack.zip:get-deps">
+       <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/_repository.xml" target="get-deps" />
+     </target>
+
+     <target name="build:installpack.zip" depends="build:installpack.zip:get-deps">
+          <echo message="*** *** Creating installpack.zip (files to upgrade)*** *** " />
+          <echo message="*** ***" />
+
+          <mkdir dir="${updater.dist.dir}" />
+		  <mkdir dir="${build.deploy.unexploded.dir}" />
+          <property name="updater.dist.dir.temp" value="${updater.dist.dir}/temp" />
+          <delete dir="${updater.dist.dir.temp}" />
+          <mkdir dir="${updater.dist.dir.temp}" />
+          <copy todir="${updater.dist.dir.temp}/dist">
+               <fileset dir="${build.deploy.unexploded.dir}">
+                    <include name="**/brewery.ear" />
+               </fileset>
+          </copy>
+          <zip file="${updater.dist.dir}/installpack.zip">
+               <fileset dir="${updater.dist.dir.temp}">
+                    <include name="**/*.*" />
+               </fileset>
+               <zipfileset dir="${database.dir}" prefix="database">
+                    <include name="from.sql" />
+                    <include name="to.sql" />
+               </zipfileset>
+               <zipfileset dir="${docs.dir}" prefix="docs">
+                    <include name="brewery_release_notes.txt" />
+               </zipfileset>
+               <fileset dir="${basedir}">
+                    <include name="LICENSE.txt" />
+               </fileset>
+          </zip>
+
+     </target>
+
+     <target name="run" depends="clean, selfextract">
+          <java jar="${updater.dist.dir}/${installer.file.name}" fork="true" />
+     </target>
+
+     <target name="test-xmlconfig">
+          <path id="xmlconfig.path">
+               <fileset dir="${updater.ext.dir}">
+                    <include name="*.jar" />
+                    <exclude name="jaxen-1.1-beta-10.jar" />
+               </fileset>
+          </path>
+
+          <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="xmlconfig.path" />
+
+          <property name="caXAParent" value="blank" />
+          <property name="caXAUrl" value="blank" />
+          <property name="secXAUrl" value="blank" />
+          <property name="secXAUser" value="blank" />
+          <property name="secXAPassword" value="blank" />
+          <xmlconfig in="${updater.test.dir}/test-xmlconfig.xml" verbose="true">
+               <read path="//datasources/xa-datasource/jndi-name[text()='breweryXAOracleDS']/.." property="caXAParent" />  
+               <read path="//datasources/xa-datasource/jndi-name[text()='breweryXAOracleDS']/../xa-datasource-property[@name='URL']" property="caXAUrl" />
+               <read path="//datasources/xa-datasource/jndi-name[text()='SecurityXAOracleDS']/../xa-datasource-property[@name='URL']" property="secXAUrl" />
+               <read path="//datasources/xa-datasource/jndi-name[text()='SecurityXAOracleDS']/../xa-datasource-property[@name='User']" property="secXAUser" />
+               <read path="//datasources/xa-datasource/jndi-name[text()='SecurityXAOracleDS']/../xa-datasource-property[@name='Password']" property="secXAPassword" />
+          </xmlconfig>
+
+          <echo message="caXAParent=${caXAParent}" />
+          <echo message="caXAUrl=${caXAUrl}" />
+          <echo message="secXAUrl=${secXAUrl}" />
+          <echo message="secXAUser=${secXAUser}" />
+          <echo message="secXAPassword=${secXAPassword}" />
+
+          <copy file="${updater.test.dir}/orig-test-xmlconfig.xml" tofile="${updater.test.dir}/test-xmlconfig.xml.out" overwrite="true"/>
+          <xmlconfig in="${updater.test.dir}/test-xmlconfig.xml.out" verbose="false">
+               <update path="//datasources/xa-datasource/jndi-name[text()='breweryXAOracleDS']/../xa-datasource-property[@name='URL']"
+                       value="${caXAUrl}" />
+               <update path="//datasources/xa-datasource/jndi-name[text()='SecurityXAOracleDS']/../xa-datasource-property[@name='URL']"
+                       value="${secXAUrl}" />
+               <update path="//datasources/xa-datasource/jndi-name[text()='SecurityXAOracleDS']/../xa-datasource-property[@name='User']"
+                       value="${secXAUser}" />
+               <update path="//datasources/xa-datasource/jndi-name[text()='SecurityXAOracleDS']/../xa-datasource-property[@name='Password']"
+                       value="${secXAPassword}" />
+          </xmlconfig>
+          <loadfile srcfile="${updater.test.dir}/test-xmlconfig.xml.out" property="test-xmlconfig.xml.out.filecontents"/>
+          <echo message="${test-xmlconfig.xml.out.filecontents}" />
+     </target>
+</project>

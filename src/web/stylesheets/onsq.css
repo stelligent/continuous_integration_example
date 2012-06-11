@@ -1,0 +1,267 @@
+BODY {
+	FONT-SIZE: 90%; MARGIN: 0px; FONT-FAMILY: Verdana, Geneva, Arial, Helvetica, sans-serif; BACKGROUND-COLOR: #ffffff
+}
+
+P {
+	font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
+	font-size: 10px;
+}            
+
+
+A:link {
+	COLOR: #333399
+}
+A:visited {
+	COLOR: #666699
+}
+A:hover {
+	COLOR: #3300ff
+}
+A.date {
+	FONT-SIZE: 90%
+}
+A.nav:link {
+	COLOR: #000066
+}
+A.nav:visited {
+	COLOR: #666699
+}
+A.nav:hover {
+	COLOR: #3300ff
+}
+A.tabnav:link {
+	COLOR: #ffffff
+}
+A.tabnav:visited {
+	COLOR: #ffffff
+}
+A.tabnav:hover {
+	COLOR: #ffffbb
+}
+TD {
+	FONT-SIZE: 10px; MARGIN: 0px; FONT-FAMILY: Verdana, Geneva, Arial, Helvetica, sans-serif
+}
+TD.noresize {
+	FONT-SIZE: 10px; MARGIN: 0px; FONT-FAMILY: Verdana, Geneva, Arial, Helvetica, sans-serif
+}
+TH {
+	FONT-SIZE: 90%; MARGIN: 0px; FONT-FAMILY: Verdana, Geneva, Arial, Helvetica, sans-serif
+}
+TH.dataheader {
+	FONT-SIZE: 100%; MARGIN: 0px; COLOR: #000066; FONT-FAMILY: Verdana, Geneva, Arial, Helvetica, sans-serif; TEXT-ALIGN: left
+}
+TD.backcolor {
+	FONT-SIZE: 100%; MARGIN: 0px; COLOR: #eeeeff; FONT-FAMILY: Verdana, Geneva, Arial, Helvetica, sans-serif
+}
+H2 {
+	COLOR: #dd7700
+}
+TD.breadcrumb {
+	FONT-SIZE: 80%; COLOR: #000033
+}
+TABLE.nav {
+	
+}
+STRONG.nav1 {
+	FONT-SIZE: 100%; COLOR: #dd7700
+}
+STRONG.nav2 {
+	COLOR: #000066
+}
+STRONG.nav3 {
+	COLOR: #000033
+}
+STRONG.nav4 {
+	COLOR: #000033
+}
+TH.tab {
+	FONT-SIZE: 80%; COLOR: #ffffff; BACKGROUND-COLOR: #000066
+}
+TH.tab_on {
+	FONT-SIZE: 80%; COLOR: #000066; BACKGROUND-COLOR: #ffddaa
+}
+A.tab:link {
+	COLOR: #ffffff
+}
+A.tab:visited {
+	COLOR: #ffffff
+}
+A.tab:hover {
+	COLOR: #ffeebb
+}
+A.tab_on:link {
+	COLOR: #000066
+}
+A.tab_on:visited {
+	COLOR: #000066
+}
+A.tab_on:hover {
+	COLOR: #0000aa
+}
+A.nav2_on {
+	FONT-WEIGHT: bold; COLOR: #000066
+}
+A.nav2 {
+	COLOR: #000066
+}
+TR.row_on {
+	BACKGROUND-COLOR: #eeeeee
+}
+.req {
+	COLOR: #d46e00
+}
+
+.odd { background-color: #ffffff;
+        }
+         
+.even { background-color: #FFCC66;
+        }
+
+
+table#main {
+  border-collapse: collapse;
+           border: 0px;
+     border-color: blue;
+    border-style: solid;
+    width: 100%;
+    padding: 0px;
+    spacing: 0px;
+} 
+        
+table#main td {
+           border: 0px;
+    border-style: solid;
+           vertical-align: top;
+           horizontal-align: left; 
+           border-color: #FFCC66;
+           padding: 0px;
+}
+
+
+        table#codes {
+	   width: 560px;
+	   font-size : 16px;
+	   border: 0;
+        }
+
+table#risks
+{
+  border-collapse: collapse; 
+  width: 200px;
+  font-size: 14px;  
+}
+
+.riskshd
+{
+  background-color: #FF9900;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+table#risks td
+{
+  border-left: 1px solid #FF9900;
+  border-right: 1px solid #FF9900;
+  border-bottom: 1px solid #FF9900;
+}
+
+table#quality
+{
+  border-collapse: collapse;
+  width: 400px;
+  font-size: 14px;  
+}
+
+.qualityhd
+{
+  background-color: #FF9900;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+table#quality td
+{
+  border-left: 1px solid #FF9900;
+  border-right: 1px solid #FF9900;
+  border-bottom: 1px solid #FF9900;
+}
+
+
+table#time
+{
+  border-collapse: collapse;
+  width: 300px;
+  font-size: 14px;  
+}
+
+.timehd
+{
+  background-color: #FF9900;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+table#time td
+{
+  border-left: 1px solid #FF9900;
+  border-right: 1px solid #FF9900;
+  border-bottom: 1px solid #FF9900;
+}
+
+
+table#costs
+{
+  border-collapse: collapse;
+  width: 400px; 
+  font-size: 14px;  
+}
+
+.costshd
+{
+  background-color: #FF9900;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+table#costs td
+{
+  border-left: 1px solid #FF9900;
+  border-right: 1px solid #FF9900;
+  border-bottom: 1px solid #FF9900;
+}
+
+
+table#scope
+{
+  border-collapse: collapse;
+  width: 400px;
+  font-size: 14px;  
+}
+
+.scopehd
+{
+  background-color: #FF9900;
+  font-size: 14px;
+  font-weight: bold;
+
+}
+
+table#scope td
+{
+  border-left: 1px solid #FF9900;
+  border-right: 1px solid #FF9900;
+  border-bottom: 1px solid #FF9900;
+}
+
+.hdrtxt
+{
+  FONT-FAMILY: Verdana, Geneva, Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  border: 1px solid #FF9900;
+  background-color: #FFCC66;
+}
+
+.hdr_style {
+
+}

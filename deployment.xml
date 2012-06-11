@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--   Augments the book, "Continuous Integration" 
+  ISBN-10: 0321336380
+  ISBN-13: 978-0321336385
+  Copyright 2007 Paul M. Duvall All Rights Reserved.
+  Visit www.integratebutton.com 
+--> 
+<project name="deployment-build" default="none" basedir=".">
+
+	<import file="${basedir}/_common-environment.xml" />
+	<import file="${basedir}/_common-configuration.xml" />
+
+	<property name="tomcat-installer-url" value="${tomcat.installer.url}"/>
+    <property name="tomcatdir" value="${basedir}/target/tomcat"/>	
+    <property name="tomcat.username" value="admin"/>	
+    <property name="tomcat.passwrd" value=""/>	
+
+	<target name="none" />
+
+  	<target name="war">
+		<copy todir="${classes.dir}">
+		    <fileset dir="${src.dir}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<war destfile="${deployment.dir}/${war.file}" webxml="${basedir}/config/xml/web.xml">
+			<fileset dir="${src.dir}" />
+			<fileset dir="${src.dir}/web" />
+			<lib dir="${lib.dir}" />
+			<classes dir="${classes.dir}" />
+		</war>
+		<copy todir="${tomcat.webapps.dir}">
+		  <fileset dir="${deployment.dir}">
+		    <include name="${war.file}" />
+		  </fileset>
+		</copy>
+	</target>
+
+<taskdef resource="cargo.tasks">
+  <classpath>
+    <pathelement location="${lib.dir}/${cargo.core.uberjar.jar}"/>
+    <pathelement location="${lib.dir}/${cargo.ant.jar}"/>
+  </classpath>
+</taskdef>	
+
+  <target name="deploy" depends="war">
+    <!--<mkdir dir="${tomcatdir}" />
+	<echo message="tomcatdir is ${tomcatdir}" />
+	<get src="http://brewery-ci.googlecode.com/svn/trunk/tools/jakarta-tomcat-5.0.28.zip" dest="${tomcatdir}/jakarta-tomcat-5.0.28.zip"/>
+	<unzip dest="${tomcatdir}" src="jakarta-tomcat-5.0.28.zip"/>
+	<echo message="Starting Tomcat instance at ${tomcatdir}" />
+	<exec executable="sh" osfamily="unix" dir="${tomcatdir}/bin" spawn="true">
+	  <env key="NOPAUSE" value="true" />
+      <arg line="startup.sh" />
+    </exec>
+	<exec osfamily="windows" executable="cmd" dir="${tomcatdir}/bin" spawn="true" >
+	  <env key="NOPAUSE" value="true" />
+      <arg line="-d -i -w ${tomcatdir}/bin ${tomcatdir}/bin/startup.bat" />
+    </exec>
+    <sleep seconds="5" />
+	<ant inheritAll="true" inheritRefs="true" antfile="testing.xml" target="run-selenium-tests" />
+	<ant inheritAll="true" inheritRefs="true" antfile="testing.xml" target="stop-server" />  
+	<echo message="Stopping Tomcat instance at ${tomcatdir}" />
+	<exec executable="sh" osfamily="unix" dir="${tomcatdir}/bin" spawn="true">
+	  <env key="NOPAUSE" value="true" />
+      <arg line="shutdown.sh" />
+	</exec>
+	<exec osfamily="windows" executable="cmd" dir="${tomcatdir}/bin" spawn="true" >
+	  <env key="NOPAUSE" value="true" />
+	  <arg line="/c shutdown.bat" />
+	</exec>
+	<sleep seconds="5" />
+	-->
+  </target>
+
+  <target name="publish-website">
+    <ftp server="${ftp.server.hostname}"
+       userid="${ftp.server.userid}"
+	   remotedir="${ftp.server.remotedir}"
+       password="${ftp.server.password}">
+       <fileset dir="${basedir}/docs/website">
+	     <include name="**/*.html"/>
+	   </fileset>
+    </ftp>  
+  </target>
+
+  <target name="upload-google" depends="create-distro">
+    <property name="gc.username" value="username not set"/>
+	<property name="gc.password" value="password not set"/>
+	<tstamp>
+	  <format property="TODAY_US" pattern="MM-dd-yyyy" locale="en,US"/>
+	</tstamp>
+	<echo>TODAY_US is ${TODAY_US} </echo>
+	<taskdef classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask" name="gcupload"/>
+	  <gcupload username="${gc.username}" password="${gc.password}" projectname="brewery-ci"
+	    filename="${target.dir}/ci-example-src.zip" targetfilename="ci-example-src-${TODAY_US}.zip"
+		summary="Initial test upload" />
+  </target>
+
+  <target name="create-distro">    
+    <zip destfile="${target.dir}/ci-example-src.zip"
+       basedir="${brewery.root.dir}"/>
+	<ftp server="${ftp.server.hostname}"
+       userid="${ftp.server.userid}"
+	   remotedir="${ftp.server.zipremotedir}"
+       password="${ftp.server.password}">
+       <fileset dir="${target.dir}">
+	     <include name="ci-example-src.zip"/>
+	   </fileset>
+    </ftp> 
+  </target>
+
+</project>

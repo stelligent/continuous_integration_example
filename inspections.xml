@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--   Augments the book, "Continuous Integration" 
+  ISBN-10: 0321336380
+  ISBN-13: 978-0321336385
+  Copyright 2007 Paul M. Duvall All Rights Reserved.
+  Visit www.integratebutton.com 
+--> 
+<project name="code-coverage" default="none" basedir=".">
+
+ <target name="compile-tests" description="Compile the test code">
+    <javac destdir="${classes.dir}" debug="true">
+      <src path="${test.unit.dir}"/>
+      <classpath refid="test.class.path"/>
+    </javac>
+  </target>
+
+  <path id="cobertura.classpath">
+    <fileset dir="${cobertura.dir}">
+      <include name="cobertura.jar" />
+      <include name="lib/**/*.jar" />
+    </fileset>
+  </path>
+
+<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+
+<target name="instrument-classes">
+  <mkdir dir="${cobertura.instrumented.dir}" />
+  <delete file="${cobertura.serial.file}" />
+  <cobertura-instrument todir="${cobertura.instrumented.dir}">
+    <ignore regex="org.apache.log4j.*" />
+    <fileset dir="${classes.dir}">
+      <include name="**/*.class" />
+      <exclude name="**/*Test.class" />
+    </fileset>
+  </cobertura-instrument>
+</target>
+
+<target name="run-cobertura" depends="compile-tests,instrument-classes">
+  <mkdir dir="${logs.junit.dir}" />
+  <junit fork="yes" haltonfailure="true" dir="${basedir}" printsummary="yes">
+    <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.serial.file}" />
+    <classpath location="${cobertura.instrumented.dir}" />
+    <classpath location="${classes.dir}" />
+    <classpath refid="test.class.path" />
+    <classpath refid="project.class.path"/>
+    <formatter type="plain" usefile="true" />
+    <formatter type="xml" usefile="true" />
+    <batchtest fork="yes" todir="${logs.junit.dir}">
+      <fileset dir="${test.unit.dir}">
+	    <patternset refid="test.sources.pattern"/>
+      </fileset>
+    </batchtest>
+   </junit>
+  <antcall target="cobertura-report" />
+</target>
+
+  <target name="cobertura-report" >
+    <mkdir dir="${cobertura.report.dir}" />
+    <cobertura-report format="html" destdir="${cobertura.report.dir}" srcdir="${src.dir}" />
+  </target>
+
+	<target name="run-jdepend">
+		<echo message="Running JDepend..." />
+		<mkdir dir="${reports.dir}/jdepend" />
+		<jdepend format="xml" outputfile="${reports.dir}/jdepend/jdepend-report.xml">
+			<classespath>
+				<pathelement location="${classes.dir}" />
+			</classespath>
+		</jdepend>
+		<xslt taskname="jdepend" in="${reports.dir}/jdepend/jdepend-report.xml" out="${reports.dir}/jdepend/index.html" style="${ant.home}/etc/jdepend.xsl" />
+	</target>
+
+  <path id="simian.classpath">
+    <pathelement location="${lib.dir}/${simian.jar}" />
+  </path>
+
+  <target name="run-simian" description="Perform code duplication analysis using Simian">
+    <taskdef resource="simiantask.properties" classpath="simian.classpath" classpathref="simian.classpath" />
+    <delete dir="${reports.simian.dir}" quiet="true" />
+    <mkdir dir="${reports.simian.dir}" />
+    <property name="simian.threshold" value="${simian.line.thresold}"/>
+    <simian threshold="${simian.line.thresold}" language="${simian.language.type}" 
+      ignoreCurlyBraces="true" 
+      ignoreIdentifierCase="true" 
+      ignoreStrings="true" 
+      ignoreStringCase="true" 
+      ignoreNumbers="true" 
+      ignoreCharacters="true">
+      <fileset dir="${src.dir}">
+        <include name="**/*.java" />
+        <exclude name="**/*.jsp" />
+        <exclude name="**/*.xml" />
+        <exclude name="**/*Test*.java" />
+      </fileset>
+      <formatter type="xml" toFile="${reports.simian.dir}/simian-log.xml" />
+    </simian>
+    <xslt taskname="simian"
+      in="${reports.simian.dir}/simian-log.xml" 
+      out="${reports.simian.dir}/index.html" 
+      style="${config.dir}/simian/simian.xsl" />
+  </target>
+
+
+    <path id="checkstyle.lib.path">
+    <fileset dir="${lib.dir}" includes="${checkstyle.jar}"/>
+  </path>
+
+  <target name="run-checkstyle" unless="ran.checks" description="Coding Standard adherence">
+    <property name="checkstyle.rules.dir" value="${config.dir}" />
+    <echo> lib.dir/checkstyle.file is: ${lib.dir}/${checkstyle.jar} </echo>
+    <taskdef classpath="${lib.dir}/${checkstyle.jar}" resource="checkstyletask.properties" />
+    <delete dir="${reports.checkstyle.dir}" quiet="true" />
+    <mkdir dir="${reports.checkstyle.dir}" />
+    <path id="checkstyle.cache.file" location="${reports.checkstyle.dir}/cache.file"/>
+    <property name="checkstyle.cache.file" refid="checkstyle.cache.file"/>
+    <touch file="${checkstyle.cache.file}"/>
+    <checkstyle
+      config="${checkstyle.rules.dir}/checkstyle/cs_checks.xml"
+      failOnViolation="false"
+      failureProperty="checks.failed"
+      classpathref="checkstyle.lib.path">
+      <property key="checkstyle.cacheFile" value="${checkstyle.cache.file}"/>
+      <property key="checkstyle.tabWidth" value="4"/>
+      <property key="checkstyle.supressions.xml" value="${basedir}/config/checkstyle/suppressions.xml"/>
+      <fileset casesensitive="yes" dir="${src.dir}" includes="**/*.java" />
+      <formatter toFile="${reports.checkstyle.dir}/checkstyle_errors.xml" type="xml" />
+    </checkstyle>
+    <antcall target="checkstyle-report"/>
+  </target>
+
+  <target name="run-pmd">
+    <path id="pmd.classpath">
+      <fileset dir="${lib.dir}" includes="pmd-4.2.2.jar"/>
+    </path>
+	<taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath"/>
+	<delete dir="${reports.pmd.dir}" quiet="true" />
+    <mkdir dir="${reports.pmd.dir}" />
+    <pmd rulesetfiles="${config.dir}/pmd/codesize.xml">   
+	    <formatter type="html" toFile="${reports.pmd.dir}/pmd_report.html" linkPrefix="http://pmd.sourceforge.net/xref/"/>
+        <fileset dir="${src.dir}">
+        <include name="**/*.java"/>
+        </fileset>
+    </pmd>
+  </target>
+
+  <target name="checkstyle-report">
+    <property name="checkstyle.data.file" value="${reports.checkstyle.dir}/checkstyle_errors.xml" />
+    <property name="checkstyle.report.file" value="${reports.checkstyle.dir}/index.html" />
+    <property name="checkstyle.xsl.file" value="${checkstyle.rules.dir}/checkstyle/checkstyle-noframes.xsl" />
+    <xslt taskname="checkstyle"
+      in="${checkstyle.data.file}"
+      out="${checkstyle.report.file}"
+      style="${checkstyle.xsl.file}" />
+  </target>
+
+  <target name="run-cyclomatic-complexity">
+    <mkdir dir="${javancss.report.dir}" />
+    <javancss srcdir="${src.dir}"
+	  includes="**/*.java"
+	  generateReport="true"
+      outputfile="${javancss.report.dir}/javancss_metrics.xml"
+      format="xml" />
+      <xslt taskname="javancss"
+        in="${javancss.report.dir}/javancss_metrics.xml"
+        out="${javancss.report.dir}/index.html"
+        style="${xsl.file}" />
+  </target>
+
+</project>

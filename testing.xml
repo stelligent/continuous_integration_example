@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--   Augments the book, "Continuous Integration" 
+  ISBN-10: 0321336380
+  ISBN-13: 978-0321336385
+  Copyright 2007 Paul M. Duvall All Rights Reserved.
+  Visit www.integratebutton.com 
+--> 
+<project name="build-tests" default="build-all" basedir=".">
+
+  <import file="${basedir}/${common.environment.file}" />
+  <import file="${basedir}/${common.configuration.file}" />
+
+  <property name="acceptance.test.lib.dir" value="${test.functional.dir}" />
+  <property name="firefox" value="*firefox" />
+  <property name="base.url"
+                value="http://${selenium.web.host.name}:${selenium.web.port}" />
+  <property name="acceptance.test.list.dir"
+                value="${test.functional.dir}" />
+  <property name="acceptance.test.report.dir"
+                value="${test.functional.dir}" />	
+
+
+ <target name="build-all" depends="clean" />
+   <target name="run-unit-tests" if="unit.tests.yes">
+     <echo message="Running unit tests" />
+		<javac destdir="${classes.dir}" debug="true">
+			<src path="${test.unit.dir}" />
+			<classpath refid="test.class.path" />
+		</javac>
+		<mkdir dir="${logs.junit.dir}" />
+		<junit fork="yes" haltonfailure="true" dir="${basedir}" printsummary="yes">
+			<classpath location="${classes.dir}" />
+			<classpath refid="test.class.path" />
+			<classpath refid="project.class.path" />
+			<formatter type="plain" usefile="true" />
+			<formatter type="xml" usefile="true" />
+			<batchtest fork="yes" todir="${logs.junit.dir}">
+				<fileset dir="${test.unit.dir}">
+					<patternset refid="test.sources.pattern" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>	
+
+  <target name="run-performance-tests">
+    <mkdir dir="${logs.junit.dir}" />
+    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="db.lib.path"/>
+    <dbunit driver="${db.driver}"
+        url="${db.url.system}"
+        userid="${db.username.system}"
+	classpathref="db.lib.path"
+        password="${db.password.system}">
+    <operation type="INSERT" 
+          src="${seed.file}"/>
+    </dbunit> 
+     <junit fork="yes" haltonfailure="false" failureproperty="tests.failed" haltonerror="true" dir="${basedir}" printsummary="yes">
+      <classpath refid="test.class.path" />
+      <classpath refid="project.class.path"/>
+      <formatter type="plain" usefile="true" />
+      <formatter type="xml" usefile="true" />
+      <batchtest fork="yes" todir="${logs.junit.dir}">
+        <fileset dir="${test.performance.dir}">
+          <patternset refid="test.sources.pattern"/>
+        </fileset>
+      </batchtest>
+    </junit>     
+    <mkdir dir="${reports.junit.dir}" />
+    <junitreport todir="${reports.junit.dir}">
+      <fileset dir="${logs.junit.dir}">
+        <include name="TEST-*.xml" />
+        <include name="TEST-*.txt" />
+      </fileset>
+      <report format="frames" todir="${reports.junit.dir}" />
+    </junitreport>
+    <dbunit driver="${db.driver}"
+        url="${db.url.system}"
+	classpathref="db.lib.path"
+        userid="${db.username.system}"
+        password="${db.password.system}">
+    <operation type="DELETE" 
+          src="${seed.file}"/>
+    </dbunit>
+</target>
+
+
+  <target name="run-selenium-tests">
+    <mkdir dir="${reports.dir}" />
+	<mkdir dir="${reports.dir}/selenium" />
+    <java jar="${lib.dir}/selenium-server.jar" fork="true">
+      <arg line="-htmlSuite ${firefox}"/>
+      <arg line="${base.url}"/>
+      <arg line="${acceptance.test.list.dir}/${selenium.test.suite}"/>
+      <arg line="${reports.dir}/selenium/index.html"/>
+      <arg line="-timeout ${selenium.timeout}"/>
+    </java>
+  </target>
+
+ <target name="stop-server">
+    <get taskname="selenium-shutdown" 
+	      src="http://${selenium.web.host.name}:${selenium.rc.port}/selenium-server/driver/?cmd=shutDown"
+      dest="result.txt" ignoreerrors="true" />
+     <echo taskname="selenium-shutdown"
+              message="Errors during shutdown are expected" />
+  </target>
+  
+  <target name="clean">
+      <delete dir="${logs.dir}" quiet="true" failonerror="false"/>    
+      <delete dir="${build.dir}" quiet="true" failonerror="false"/>    
+      <delete dir="${deployment.dir}" quiet="true" failonerror="false"/>    
+  </target>
+
+  <target name="compile-tests" description="Compile the test code">
+    <mkdir dir="${classes.dir}"/>
+    <javac destdir="${classes.dir}" debug="true">
+      <src path="${test.unit.dir}"/>
+      <classpath refid="test.class.path"/>
+    </javac>
+    <javac destdir="${classes.dir}" debug="true">
+      <src path="${test.component.dir}"/>
+      <classpath refid="test.class.path"/>
+    </javac>
+    <javac destdir="${classes.dir}" debug="true">
+      <src path="${test.performance.dir}"/>
+      <classpath refid="test.class.path"/>
+    </javac>
+  </target>
+
+  <target name="junit-report">
+    <junit fork="yes" haltonfailure="true" dir="${basedir}" printsummary="yes">
+      <classpath refid="test.class.path" />
+      <classpath refid="project.class.path"/>
+      <formatter type="plain" usefile="true" />
+      <formatter type="xml" usefile="true" />
+      <batchtest fork="yes" todir="${logs.junit.dir}">
+        <fileset dir="${test.component.dir}">
+          <patternset refid="test.sources.pattern"/>
+        </fileset>
+      </batchtest>
+    </junit>     
+    <mkdir dir="${reports.junit.dir}" />
+    <junitreport todir="${reports.junit.dir}">
+      <fileset dir="${logs.junit.dir}">
+        <include name="TEST-*.xml" />
+        <include name="TEST-*.txt" />
+      </fileset>
+      <report format="frames" todir="${reports.junit.dir}" />
+    </junitreport>
+  </target>
+
+  <target name="run-component-tests">
+    <mkdir dir="${logs.junit.dir}" />
+    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="db.lib.path"/>
+    <dbunit driver="${db.driver}"
+        url="${db.url.system}"
+        userid="${db.username.system}"
+	classpathref="db.lib.path"
+        password="${db.password.system}">
+    <operation type="INSERT" 
+          src="${seed.file}"/>
+    </dbunit> 
+     <junit fork="yes" haltonfailure="false" failureproperty="tests.failed" haltonerror="true" dir="${basedir}" printsummary="yes">
+      <classpath refid="test.class.path" />
+      <classpath refid="project.class.path"/>
+      <formatter type="plain" usefile="true" />
+      <formatter type="xml" usefile="true" />
+      <batchtest fork="yes" todir="${logs.junit.dir}">
+        <fileset dir="${test.component.dir}">
+          <patternset refid="test.sources.pattern"/>
+        </fileset>
+      </batchtest>
+    </junit>     
+    <mkdir dir="${reports.junit.dir}" />
+    <junitreport todir="${reports.junit.dir}">
+      <fileset dir="${logs.junit.dir}">
+        <include name="TEST-*.xml" />
+        <include name="TEST-*.txt" />
+      </fileset>
+      <report format="frames" todir="${reports.junit.dir}" />
+    </junitreport>
+    <dbunit driver="${db.driver}"
+        url="${db.url.system}"
+	classpathref="db.lib.path"
+        userid="${db.username.system}"
+        password="${db.password.system}">
+    <operation type="DELETE" 
+          src="${seed.file}"/>
+    </dbunit>
+</target>
+
+ <target name="run-junit">
+    <mkdir dir="${logs.junit.dir}" />
+    <junit fork="yes" haltonfailure="true" dir="${basedir}" printsummary="yes">
+      <classpath refid="test.class.path" />
+      <classpath refid="project.class.path"/>
+      <formatter type="plain" usefile="true" />
+      <formatter type="xml" usefile="true" />
+      <batchtest fork="yes" todir="${logs.junit.dir}">
+        <fileset dir="${test.unit.dir}">
+          <patternset refid="test.sources.pattern"/>
+        </fileset>
+      </batchtest>
+    </junit>    
+  </target>
+
+  <target name="run-junit-report" if="unit.tests.reports.yes">
+    <echo message="Running junit-report target in unit-tests-build.xml " />
+	<mkdir dir="${reports.junit.dir}"  />
+    <junitreport todir="${reports.junit.dir}">
+      <fileset dir="${logs.junit.dir}">
+        <include name="TEST-*.xml" />
+        <include name="TEST-*.txt" />
+      </fileset>
+      <report format="frames" todir="${reports.junit.dir}" />
+    </junitreport>
+  </target>
+
+  	<target name="run-architecture-tests" if="dependency.tests.yes">
+		<echo message="Running architecture tests" />
+		<javac destdir="${classes.dir}" debug="true">
+			<src path="${test.dependency.dir}" />
+			<classpath refid="test.class.path" />
+		</javac>
+		<mkdir dir="${logs.junit.dir}" />
+		<junit fork="yes" haltonfailure="true" dir="${basedir}" printsummary="yes">
+			<classpath location="${classes.dir}" />
+			<classpath refid="test.class.path" />
+			<classpath refid="project.class.path" />
+			<formatter type="plain" usefile="true" />
+			<formatter type="xml" usefile="true" />
+			<batchtest fork="yes" todir="${logs.junit.dir}">
+				<fileset dir="${test.dependency.dir}">
+					<patternset refid="test.sources.pattern" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="run-load-tests">
+	 
+	</target>
+
+</project>

@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<!DOCTYPE installer PUBLIC "-//tp23 //DTD Ant Installer Config//EN" "http://antinstaller.sf.net/dtd/antinstall-config-0.8.dtd">
+<installer ui="swing,text" verbose="false"
+	lookAndFeel="org.tp23.jgoodies.plaf.plastic.PlasticXPLookAndFeel"
+	name="Brewery Installer"
+	windowIcon="/resources/gkmain_inv.png"
+	defaultImageResource="/resources/guinness.png"
+	minJavaVersion="1.5" finishButtonText="Install" wide="600:275"
+	debug="false">
+
+	<!--  each page element represents a page of the installer -->
+	<page type="input" name="intro"
+		displayText="Welcome to the Brewery Installer">
+
+		<comment displayText="Minimum Requirements:" bold="true" />
+		<comment
+			displayText="BREWERY: INSERT TEXT HERE 1"
+			bold="false" />
+		<comment displayText="" bold="true" />
+		<comment displayText="Recommendation:" bold="true" />
+		<comment displayText="BREWERY: INSERT TEXT HERE 2" bold="false" />
+		<comment displayText="" bold="true" />
+		<comment displayText="" bold="true" />
+		<comment displayText="" bold="true" />
+		<comment displayText="" bold="true" />
+		<comment displayText="" bold="true" />
+		<comment displayText="" bold="true" />
+		<comment displayText="" bold="true" />
+	</page>
+	<!--  type="license" shows a license page to click through -->
+	<page type="license" name="license" displayText="License conditions"
+		resource="/resources/LICENSE.txt">
+	</page>
+	<!--  type="license" shows a license page to click through
+	-->
+	<page type="text" name="release_notes" displayText="Release Notes" htmlResource="/resources/brewery_release_notes.html" textResource="/resources/brewery_release_notes.txt">
+	</page>
+	<!--  type="input" shows a list of editable options for the installer -->
+	<page type="input" name="input.file"
+		displayText="BREWERY: SAY SOMETHING USEFUL HERE">
+		<comment displayText="" bold="true" />
+		<comment
+			displayText="This will install the Brewery Application"
+			bold="true" />
+		<comment displayText="" bold="true" />
+		<file property="input.file"
+			defaultValue="C:/dev/brewery/LICENSE.TXT"
+			defaultValueWin="C:\dev\brewery\LICENSE.TXT"
+			displayText="Select some file"
+			checkExists="true" />
+		<comment displayText="" bold="true" />
+		<comment displayText="" bold="true" />
+		<comment displayText="" bold="true" />
+		<comment displayText="" bold="true" />
+		<comment displayText="" bold="true" />
+		<comment
+			displayText="NOTE: BREW" />
+	</page>
+	<page type="input" name="patchOptions" displayText="Confirmation">
+		<comment
+			displayText="BREW"
+			bold="true" />
+		<comment displayText="" bold="true" />
+		<target displayText="Yes or No (check for Yes)?"
+			target="auto-update" defaultValue="No" />
+		<comment
+			displayText="NOTE: When using Text-only mode, type 'Yes' or 'No' (excluding apostrophes)" />
+	</page>
+
+	<!--  page type="progress" shows a progress page with the install button
+		Its target is set to cleanuptarget since it is the last page this target will be run last-->
+	<page type="progress" name="progress" showTargets="false"
+		displayText="Installation progress" target="cleanuptarget">
+
+	</page>
+</installer>
+
+

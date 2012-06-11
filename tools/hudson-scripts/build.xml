@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+$Id: $
+$HeadURL:  $
+-->
+<project name="hudson-manager" default="install" basedir=".">
+    <description>
+	  This build file will update or deploy Hudson configurations between working directory and SVN repository.
+	</description>
+
+	<property environment="env"/>
+	<property file="project.properties" />
+	<property name="properties.file" value="${basedir}/install.properties"/>
+	<replaceregexp file="${properties.file}" byline="true" match="^([\w\d.]+)=(.*[\w\d\/\{\}\\]+)[ \t]+\r*$" replace="\1=\2"/>
+	<replaceregexp file="${properties.file}" byline="true" match="^([\w\d.]+)=[ \t]+(.*[\w\d\/\{\}\\]+)\r*$" replace="\1=\2"/>
+	<property file="${properties.file}" />
+	<basename property="properties.file.name" file="${properties.file}"/>
+	<property name="target.dir" location="target" />
+	<property name="software.dir" location="${target.dir}/temp/temp/temp"/>
+	<property name="lib.dir" location="${basedir}/lib" />
+	<property name="working.dir" location="${target.dir}/working" />
+	<property name="tomcat.dest.file" location="${working.dir}/${tomcat.binaries.file}"/>
+	<mkdir dir="${software.dir}" />
+	
+	<path id="project.classpath">
+	  <fileset dir="${lib.dir}">
+	    <include name="**/*.jar" />
+      </fileset>
+	</path>
+	<taskdef name="for" classname="net.sf.antcontrib.logic.ForTask">
+	  <classpath>
+	    <pathelement location="${basedir}/lib/ant-contrib-1.0b3.jar"/>
+      </classpath>
+	</taskdef>
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+	  <classpath>
+	    <pathelement location="${basedir}/lib/ant-contrib-1.0b3.jar"/>
+		<pathelement location="${basedir}/lib/bcel-5.1.jar"/>
+		<pathelement location="${basedir}/lib/commons-httpclient-3.0.1.jar"/>
+		<pathelement location="${basedir}/lib/commons-logging-1.0.4.jar"/>
+      </classpath>
+	</taskdef>
+    
+	<taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="project.classpath" />
+
+	<target name="init">
+	  <mkdir dir="${working.dir}"/>
+	  <available file="${tomcat.dest.file}" property="tomcat.tools.exists"/>
+	  <available file="${tomcat.home}/conf/server.xml" property="tomcat.exists"/>
+	  <if>
+	  <not>
+	    <isset property="env.HUDSON_HOME"/>
+	  </not>
+	  <then>
+	    <property name="hudson.not.set" value="true"/>
+	  </then>
+	  </if>
+	</target>
+
+	<target name="retrieve:tomcat" unless="tomcat.exists">
+	  <echo message="Retrieving Tomcat files" />
+	  <if>
+	  <not>
+	    <available file="${tomcat.dest.file}"/>
+	  </not>
+	  <then>
+	    <get src="${tomcat.src.url}" dest="${tomcat.dest.file}"/>
+		<get src="${tomcat.src.url}.MD5" dest="${tomcat.dest.file}.MD5"/>
+		<checksum file="${tomcat.dest.file}" verifyProperty="tomcat.cksum.ok"/>
+	    <if>
+	      <equals arg1="${tomcat.cksum.ok}" arg2="true"/>
+	    <then>
+          <echo message="Downloaded Apache Tomcat sucessfully"/>
+        </then>
+	    <else>
+	      <fail message="Failed to download Apache Tomcat file sucessfully."/>
+        </else>
+        </if>
+      </then>
+	  </if>
+	</target>
+
+	<target name="retrieve:hudson" unless="tomcat.exists">
+      <echo message="Checking for Hudson file: ${hudson.file.name}"/>
+	  <if>
+      <not>
+	    <available file="${working.dir}/${hudson.file.name}"/>
+	  </not>
+	  <then>
+	    <get src="${hudson.base.url}/${hudson.file.name}" dest="${working.dir}/${hudson.file.name}"/>
+      </then>
+	  </if>
+	</target>
+	
+	<target name="install:tomcat:binaries" description="Install tomcat" unless="tomcat.exists">
+	  <echo message="Installing Tomcat files..." />
+	  <delete dir="${tomcat.home}"/>
+	    <unzip dest="${application.base.path}" src="${tomcat.dest.file}" />
+      <if>
+	    <os family="unix"/>
+	  <then>
+	    <chmod dir="${tomcat.home}/bin" perm="ugo+rx" includes="**/*.sh"/>
+	    </then>
+	  </if>
+	</target>
+	
+	<target name="install:tomcat:configure" description="Configure tomcat (change ports)" unless="tomcat.exists">
+	  <echo message="Configuring Tomcat ports, etc." />
+	  <xmlconfig in="${tomcat.home}/conf/server.xml" verbose="false">
+	    <update path="(//Connector)[@port=8080]/@port" value="${tomcat.port.http}" />
+		<update path="(//Connector)[@redirectPort=8443]/@redirectPort" value="${tomcat.port.ssl}" />
+		<update path="(//Connector)[@port=8009]/@port" value="${tomcat.port.ajp}" />
+		<update path="(//Connector)[@port=8443]/@port" value="${tomcat.port.ssl}" />
+		<update path="(//Server)[@port=8005]/@port" value="${tomcat.port.shutdown}" />
+      </xmlconfig>
+	</target>
+
+	<target name="install:tomcat" description="Install tomcat" unless="tomcat.exists"
+	  depends="
+	  init,
+	  retrieve:tomcat,
+	  install:tomcat:binaries,
+	  install:tomcat:configure"/>
+	
+	<target name="install:hudson" description="Install hudson" unless="tomcat.exists"
+      depends="
+	  init,
+	  retrieve:hudson,
+	  install:hudson:binaries,
+	  install:hudson:configure"/>
+
+	<target name="install:hudson:binaries" description="Install Hudson WAR file" unless="tomcat.exists">
+	  <echo message="Installing Hudson WAR file" />
+	  <copy todir="${tomcat.home}/webapps">
+	    <fileset dir="${working.dir}">
+          <include name="${hudson.file.name}"/>
+		</fileset>
+	  </copy>
+    </target>
+	
+	<target name="install:hudson:configure" description="configure hudson" unless="tomcat.exists">
+	</target>
+	
+	<target name="start:tomcat" unless="hudson.not.set">
+	    <osfamily property="os.family"/>
+	    <switch value="${os.family}">
+		  <case value="unix">
+		    <echo message="Tomcat has not started. To start Tomcat, you will need to by typing ${tomcat.home}/bin/run.sh"/>
+		    <echo message="For bash shell you can edit the $HOME/.bash_profile and add 'export HUDSON_HOME=${hudson.dir}'"/>
+		    <echo message="For other shells refer to you operating system documentation (you can check your shell by 'echo $SHELL')"/>
+		  </case> 
+		  <case value="windows">
+            <echo message="Tomcat has not started. To start Tomcat, you will need to by typing ${tomcat.home}/bin/startup.bat"/>
+            <echo message="Right click on My Computer, select Properties, select Advanced tab, click on Environment Variables, click on New under System Variables, and set HUDSON_HOME to ${hudson.dir}"/>
+		    <echo message="Don't forget to close all existing CMD windows before trying to use this variable."/>
+		  </case> 
+		</switch>
+	</target>
+	
+	<target name="stop:tomcat">
+	  <echo message="Stopping Tomcat instance at ${tomcat.home}" />
+      <exec executable="sh" osfamily="unix" dir="${tomcat.home}/bin" spawn="true">
+	    <env key="NOPAUSE" value="true" />
+		<arg line="shutdown.sh" />
+	  </exec>
+	  <exec osfamily="windows" executable="cmd" dir="${tomcat.home}/bin" spawn="true" >
+	    <env key="NOPAUSE" value="true" />
+		<arg line="/c shutdown.bat" />
+	  </exec>
+      <sleep seconds="5" />
+	</target>
+	
+	<target name="install"
+	  depends="
+	  init,
+	  install:tomcat,
+      install:hudson,
+	  start:tomcat">
+	  <if>
+	    <isset property="hudson.not.set"/>
+	  <then>
+	    <osfamily property="os.family"/>
+	    <switch value="${os.family}">
+		  <case value="unix">
+		    <echo message="The environment variable HUDSON_HOME is not set. You need to set this variable prior to starting Tomcat; therefore, you will need to start the Tomcat server manually by running ${tomcat.home}/bin/run.sh"/>
+		    <echo message="For bash shell you can edit the $HOME/.bash_profile and add 'export HUDSON_HOME=${hudson.dir}'"/>
+		    <echo message="For other shells refer to you operating system documentation (you can check your shell by 'echo $SHELL')"/>
+		  </case> 
+		  <case value="windows">
+            <echo message="The environment variable HUDSON_HOME is not set. You need to set this variable prior to starting Tomcat; therefore, you will need to start the Tomcat server manually by running ${tomcat.home}/bin/startup.bat"/>
+            <echo message="Right click on My Computer, select Properties, select Advanced tab, click on Environment Variables, click on New under System Variables, and set HUDSON_HOME to ${hudson.dir}"/>
+		    <echo message="Don't forget to close all existing CMD windows before trying to use this variable."/>
+		  </case> 
+		</switch>
+		<echo message="Once environment variable is set and tomcat is started you can access it at http://localhost:${tomcat.port.http}/hudson"/>
+		</then>
+	  <else>
+		  <echo message="You can access it at http://localhost:${tomcat.port.http}/hudson"/>
+	  </else>
+	  </if>
+	</target>
+</project>

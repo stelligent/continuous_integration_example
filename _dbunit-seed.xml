@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--   Augments the book, "Continuous Integration" 
+  ISBN-10: 0321336380
+  ISBN-13: 978-0321336385
+  Copyright 2007 Paul M. Duvall All Rights Reserved.
+  Visit www.integratebutton.com 
+--> 
+<dataset>
+  <BEER id='6' 
+            beer_name='Guinness Extra Stout'			
+            brewer='St.James Brewery'
+            date_received='2006-01-01' />
+  <BEER id='7' 
+            beer_name='Smuttynose Robust Porter'			
+            brewer='Smuttynose Brewery'
+            date_received='2006-01-01' />
+  <BEER id='8' 
+            beer_name='Wolavers pale ale'	
+            brewer='Wolaver Brewery'
+            date_received='2006-01-01' />
+</dataset>

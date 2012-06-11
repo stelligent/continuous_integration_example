@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--   Augments the book, "Continuous Integration" 
+  ISBN-10: 0321336380
+  ISBN-13: 978-0321336385
+  Copyright 2007 Paul M. Duvall All Rights Reserved.
+  Visit www.integratebutton.com 
+--> 
+<project name="repository-build" default="get-deps" basedir=".">
+  <property file="default.properties" />
+  <import file="${basedir}/_common-configuration.xml" />  
+
+  <target name="get-deps" unless="noget">
+    <mkdir dir="${lib.dir}"/>    
+	<get dest="${lib.dir}/${cargo.ant.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${cargo.ant.jar}">
+    </get>
+	<get dest="${lib.dir}/${cargo.core.uberjar.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${cargo.core.uberjar.jar}">
+    </get>
+	<get dest="${lib.dir}/${checkstyle.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${checkstyle.jar}">
+    </get>
+	<get dest="${lib.dir}/${cobertura.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${cobertura.jar}">
+    </get>
+    <get dest="${lib.dir}/${commons-beanutils.jar}" usetimestamp="true"
+	  ignoreerrors="true" src="${web.download.site}/${commons-beanutils.jar}">
+    </get>
+	<get dest="${lib.dir}/${commons-codec.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${commons-codec.jar}">
+    </get>
+	<get dest="${lib.dir}/${commons-collections.jar}" 
+	  usetimestamp="true" ignoreerrors="true" src="${web.download.site}/${commons-collections.jar}">
+    </get>
+	<get dest="${lib.dir}/${commons-digester.jar}" 
+	  usetimestamp="true" ignoreerrors="true" src="${web.download.site}/${commons-digester.jar}">
+    </get>
+	<get dest="${lib.dir}/${commons-fileupload.jar}" 
+	  usetimestamp="true" ignoreerrors="true" src="${web.download.site}/${commons-fileupload.jar}">
+    </get>
+	<get dest="${lib.dir}/${commons-lang.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${commons-lang.jar}">
+    </get>
+	<get dest="${lib.dir}/${commons-logging.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${commons-logging.jar}">
+    </get>
+	<get dest="${lib.dir}/${dbunit.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${dbunit.jar}">
+    </get>
+	<get dest="${lib.dir}/${dom4j.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${dom4j.jar}">
+    </get>
+	<get dest="${lib.dir}/${hsql.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${hsql.jar}">
+    </get>	
+	<get dest="${lib.dir}/${javassist.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${javassist.jar}">
+    </get>
+	<get dest="${lib.dir}/${javancss.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${maven.site}/javancss/jars/${javancss.jar}">
+    </get>
+	<get dest="${lib.dir}/${javanvss.ccl.jar}" usetimestamp="true" ignoreerrors="true" src="${maven.site}/javancss/jars/${javanvss.ccl.jar}">
+    </get>
+	<get dest="${lib.dir}/${javanvss.jhbasic.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${maven.site}/javancss/jars/${javanvss.jhbasic.jar}">
+    </get>
+    <get dest="${lib.dir}/asm-3.1.jar" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/asm-3.1.jar">
+    </get>
+    <get dest="${lib.dir}/jaxen-1.1.1.jar" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/jaxen-1.1.1.jar">
+    </get>
+    <get dest="${lib.dir}/pmd-4.2.2.jar" usetimestamp="true"
+	  ignoreerrors="true" src="${web.download.site}/pmd-4.2.2.jar">
+    </get>
+	<get dest="${lib.dir}/${jdepend.jar}" usetimestamp="true" ignoreerrors="true" src="${web.download.site}/${jdepend.jar}">
+    </get>
+	<get dest="${lib.dir}/${jdbc.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${jdbc.jar}">
+    </get>
+	<get dest="${lib.dir}/${jsp.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${jsp.jar}">
+    </get>
+	<get dest="${lib.dir}/jta.jar" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/jta.jar">
+    </get>
+	<get dest="${lib.dir}/${junit.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${junit.jar}">
+    </get>
+	<get dest="${lib.dir}/${junitperf.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${junitperf.jar}">
+    </get>
+	<get dest="${lib.dir}/${log4j.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${log4j.jar}">
+    </get>
+	<get dest="${lib.dir}/odmg-3.0.jar" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/odmg-3.0.jar">
+    </get>
+	<get dest="${lib.dir}/saxpath-1.0-fcs.jar" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/saxpath-1.0-fcs.jar">
+    </get>
+	<get dest="${lib.dir}/${servlet.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${servlet.jar}">
+    </get>
+	<get dest="${lib.dir}/selenium-server.jar" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/selenium-server.jar">
+    </get>
+	<get dest="${lib.dir}/${simian.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${simian.jar}">
+    </get>
+	<get dest="${lib.dir}/${standard.jar}" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${standard.jar}">
+    </get>
+    <get dest="${lib.dir}/svnClientAdapter.jar" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${svn.client.adapter.jar}">
+    </get>
+    <get dest="${lib.dir}/svnjavahl.jar" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${svn.javahl.jar}">
+    </get>
+    <get dest="${lib.dir}/svnant.jar" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/${svn.ant.jar}">
+    </get>
+	<get dest="${lib.dir}/xercesImpl-2.0.2.jar" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/xercesImpl-2.0.2.jar">
+    </get>
+	<get dest="${lib.dir}/xmlParserAPIs-2.0.2.jar" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/xmlParserAPIs-2.0.2.jar">
+    </get>
+	<get dest="${lib.dir}/mysql-connector-java-5.0.5-bin.jar" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/mysql-connector-java-5.0.5-bin.jar">
+    </get>
+	<get dest="${lib.dir}/ant-contrib.jar" usetimestamp="true" 
+	  ignoreerrors="true" src="${web.download.site}/ant-contrib.jar">
+    </get>	
+    <!--><copy todir="${ant.home}/lib">
+      <fileset dir="${lib.dir}">
+        <include name="${jdepend.jar}"/>
+      </fileset>
+    </copy>
+-->
+  </target>
+
+</project>

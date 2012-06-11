@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--   Augments the book, "Continuous Integration" 
+  ISBN-10: 0321336380
+  ISBN-13: 978-0321336385
+  Copyright 2007 Paul M. Duvall All Rights Reserved.
+  Visit www.integratebutton.com 
+--> 
+<project name="compile-code" default="all" basedir=".">
+
+	<import file="${basedir}/${common.environment.file}" />
+	<import file="${basedir}/${common.configuration.file}" />
+
+
+<target name="all">
+  <antcall target="compile-src" />
+</target>
+
+  <target name="compile-src">
+    <mkdir dir="${classes.dir}"/>
+    <javac destdir="${classes.dir}" debug="true">
+      <src path="${src.dir}" />
+      <classpath refid="project.class.path"/>
+    </javac>
+  </target>
+</project>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--   Augments the book, "Continuous Integration" 
+  ISBN-10: 0321336380
+  ISBN-13: 978-0321336385
+  Copyright 2007 Paul M. Duvall All Rights Reserved.
+  Visit www.integratebutton.com 
+--> 
+<project name="common-config" default="none" basedir=".">
+
+	<mkdir dir="${lib.dir}" />
+
+   <path id="tool.class.path">
+	</path>
+	<patternset id="test.sources.pattern">
+		<include name="**/*Test*.java" />
+	</patternset>
+	<path id="test.class.path">
+		<path refid="common.class.path" />
+	</path>
+	<path id="common.class.path">
+		<pathelement location="." />
+		<pathelement location="${classes.dir}" />
+		<pathelement location="${resource.dir}" />
+		<path refid="hsql.class.path"/>
+		<pathelement location="." />
+		<pathelement location="${ant.dir}/lib/ant-jdepend.jar" />
+		<pathelement location="${ant.dir}/lib/${junit.jar}" />
+		<pathelement location="${lib.dir}/${cobertura.jar}" />		
+		<pathelement location="${lib.dir}/${cargo.core.uberjar.jar}" />
+		<pathelement location="${lib.dir}/${cargo.ant.jar}" />
+		<pathelement location="${lib.dir}/${checkstyle.jar}" />
+		<pathelement location="${lib.dir}/${commons-beanutils.jar}" />
+		<pathelement location="${lib.dir}/${commons-codec.jar}" />
+		<pathelement location="${lib.dir}/${commons-collections.jar}" />
+		<pathelement location="${lib.dir}/${commons-digester.jar}" />
+		<pathelement location="${lib.dir}/${commons-fileupload.jar}" />
+		<pathelement location="${lib.dir}/${commons-lang.jar}" />
+		<pathelement location="${lib.dir}/${commons-logging.jar}" />
+		<pathelement location="${lib.dir}/${dbunit.jar}" />
+		<pathelement location="${lib.dir}/${dom4j.jar}" />
+		<pathelement location="${lib.dir}/${hsql.jar}" />	
+		<pathelement location="${lib.dir}/${javancss.jar}" />
+		<pathelement location="${lib.dir}/asm-3.1.jar" />
+		<pathelement location="${lib.dir}/jaxen-1.1.1.jar" />
+		<pathelement location="${lib.dir}/javassist.jar" />
+		<pathelement location="${lib.dir}/jdbc2_0-stdext.jar" />
+		<pathelement location="${lib.dir}/${jdepend.jar}" />
+		<pathelement location="${lib.dir}/jndi.jar" />
+		<pathelement location="${lib.dir}/jsp-api.jar" />
+		<pathelement location="${lib.dir}/jta.jar" />
+		<pathelement location="${lib.dir}/${junit.jar}" />	
+		<pathelement location="${lib.dir}/${junitperf.jar}" />
+		<pathelement location="${lib.dir}/${log4j.jar}" />
+		<pathelement location="${lib.dir}/odmg-3.0.jar" />
+		<pathelement location="${lib.dir}/ognl-2.6.7.jar" />
+		<pathelement location="${lib.dir}/saxpath-1.0-fcs.jar" />
+		<pathelement location="${lib.dir}/${simian.jar}" />
+		<pathelement location="${lib.dir}/servlet-api.jar" />
+		<pathelement location="${lib.dir}/xalan.jar" />
+		<pathelement location="${lib.dir}/xercesImpl-2.0.2.jar" />
+		<pathelement location="${lib.dir}/xmlParserAPIs-2.0.2.jar" />
+		<pathelement location="${lib.dir}/mysql-connector-java-5.0.5-bin.jar" />
+		<pathelement location="${lib.dir}/commons-cli-1.1.jar" />
+		<pathelement location="${lib.dir}/crimson-1.1.3.jar" />
+		<pathelement location="${lib.dir}/dbunit-2.1.jar" />
+		<pathelement location="${lib.dir}/easyb-0.02.jar" />
+		<pathelement location="${lib.dir}/groovy-all-1.0.jar" />
+		<pathelement location="${lib.dir}/jbehave-1.1-110507.jar" />
+		<pathelement location="${lib.dir}/commons-net-1.4.1.jar" />	
+		<pathelement location="${lib.dir}/pmd-4.2.2.jar" />
+	</path>
+
+	<fileset id="hsql.class.fs" dir="${lib.dir}">
+		<include name="${hsql.jar}" />	
+		<include name="dbunit-2.1.jar"/>		
+	</fileset>
+	<path id="hsql.class.path">
+		<fileset refid="hsql.class.fs"/>
+	</path>
+	<path id="db.lib.path">
+		<path refid="hsql.class.path" />
+	</path>
+
+	<path id="project.class.path">
+		<path refid="common.class.path" />
+		<path refid="tool.class.path" />
+		<path refid="db.lib.path" />
+	</path>
+
+	<property name="common.class.path" refid="common.class.path" />
+	<property name="project.class.path" refid="project.class.path" />
+    <target name="none"/> 
+</project>

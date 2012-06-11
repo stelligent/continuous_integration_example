@@ -1,0 +1,67 @@
+
+
+Release Notes
+=============
+ 
+  #Product:#	brewery
+  #Version:#	1.0
+  #Date:#	November 2007
+
+Contents
+--------
+
+   1. Introduction
+   2. Release History
+   3. New Features and Updates
+   4. Bugs Fixed Since Last Release
+   5. Known Issues/Defects
+   6. Bug Reports, Feature Requests, and Support
+   7. Documentation and Files
+   8. Brewery Web Pages
+
+Introduction
+---------------------------
+ 
+For more information:
+
+* http://code.google.com/p/brewery-ci/
+
+Release History
+---------------
+ 
+    * 1.0 		-- November 2007
+
+New Features and Updates
+------------------------
+
+    1. TBD
+    2. TBD
+
+Defects Fixed Since Last Release
+--------------------------------
+
+  
+    * Bug 1234 TBD
+  
+
+Known Issues/Defects
+--------------------
+  
+    See http://code.google.com/p/brewery-ci/
+
+
+Bug Reports, Feature Requests, And Support
+------------------------------------------
+
+TBD
+
+Documentation And Files
+-----------------------
+
+TBD 
+
+Brewery Web Pages
+---------------
+
+    * http://code.google.com/p/brewery-ci/
+

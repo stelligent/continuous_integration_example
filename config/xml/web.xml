@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN" "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd">
+
+<web-app>   
+  <servlet>
+    <servlet-name>Controller</servlet-name>
+    <servlet-class>com.beer.web.ServletController</servlet-class>
+  </servlet>  
+  <servlet-mapping>
+    <servlet-name>Controller</servlet-name>
+    <url-pattern>/Controller</url-pattern>
+  </servlet-mapping>
+  <session-config>
+	  <session-timeout>30</session-timeout> <!-- 30 minute session timeout -->
+  </session-config>	 
+</web-app>

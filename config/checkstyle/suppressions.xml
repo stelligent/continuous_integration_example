@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.0//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
+
+<suppressions>
+	<!-- Exclude ALL CHECKS for any files matching Base*; 
+		we are using to avoid any hibernate generated code.-->
+    <suppress checks=".*"
+              files="BaseRootDao"
+              />
+    <suppress checks=".*"
+              files="RootDao"
+              /> 
+    <suppress checks=".*"
+              files=".*Mock"
+              />                   
+    <suppress checks="MethodNameCheck"
+              files="CreateProperty"
+              />                            
+    <suppress checks="MethodNameCheck"
+              files="TrackProperty"
+              /> 
+    <suppress checks="MethodNameCheck"
+              files="TrackPropertyExample"
+              />
+    <suppress checks="MethodNameCheck"
+              files="EnterSurvey"
+              />       
+    <suppress checks="MagicNumber"
+              files=".*QueryResultTranslator"
+              /> 
+    <suppress checks="MagicNumber"
+              files="CommonReportRecordResultTranslator"
+              />               
+    <suppress checks="MagicNumber"
+              files="ReportDaoImpl"
+              />                    
+    <suppress checks="InterfaceIsType"
+              files="IApplicationMessageKeys"
+              />                                                                   
+    <suppress checks="InterfaceIsType"
+              files="IPropertyFieldNames"
+              />
+    <suppress checks="MagicNumber"
+              files="DbfReportExporter"
+              />
+    <suppress checks="InterfaceIsType"
+              files="IExportData"
+              />              
+</suppressions>

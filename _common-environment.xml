@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--   Augments the book, "Continuous Integration" 
+  ISBN-10: 0321336380
+  ISBN-13: 978-0321336385
+  Copyright 2007 Paul M. Duvall All Rights Reserved.
+  Visit www.integratebutton.com 
+--> 
+<project name="common-environment" default="none" basedir=".">
+	<property environment="env"  />
+	<property name="environment" value="local"/>
+	<property file="${environment}.properties"/>
+	<property file="default.properties" />
+
+    <target name="none"/>
+    <filterset id="all.filter.tokens">
+	</filterset>	
+</project>

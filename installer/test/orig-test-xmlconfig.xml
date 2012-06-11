@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+	<xa-datasource>
+		<jndi-name>SecurityXAOracleDS</jndi-name>
+		<xa-datasource-property name="URL">
+		</xa-datasource-property>
+		<xa-datasource-property name="User">
+		</xa-datasource-property>
+		<xa-datasource-property name="Password">
+		</xa-datasource-property>
+		I'm the SecurityXAOracleDS xa-datasource node text
+	</xa-datasource>
+	<xa-datasource>
+		<jndi-name>breweryXAOracleDS</jndi-name>
+		<xa-datasource-property name="URL">
+		</xa-datasource-property>
+		I'm the breweryXAOracleDS xa-datasource node text
+	</xa-datasource>
+</datasources>

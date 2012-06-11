@@ -1,0 +1,251 @@
+<html><body>
+<h1>Test suite results </h1>
+
+<table>
+<tr>
+<td>result:</td>
+<td>failed</td>
+</tr>
+<tr>
+<td>totalTime:</td>
+<td>2</td>
+</tr>
+<tr>
+<td>numTestPasses:</td>
+<td>4</td>
+</tr>
+<tr>
+<td>numTestFailures:</td>
+<td>1</td>
+</tr>
+<tr>
+<td>numCommandPasses:</td>
+<td>2</td>
+</tr>
+<tr>
+<td>numCommandFailures:</td>
+<td>1</td>
+</tr>
+<tr>
+<td>numCommandErrors:</td>
+<td>0</td>
+</tr>
+<tr>
+<td>
+
+<table border="1" cellpadding="1" cellspacing="1">
+        <tbody>
+            <tr><td bgcolor="#ffcccc"><b>Test Suite</b></td></tr>
+            <tr><td bgcolor="#ffcccc"><a href="Login.html">Login</a></td></tr>
+			<tr><td bgcolor="#ccffcc"><a href="Logout.html">Logout</a></td></tr>
+			<tr><td bgcolor="#ccffcc"><a href="AddBeer.html">Add Beer</a></td></tr>
+			<tr><td bgcolor="#ccffcc"><a href="UpdateBeer.html">Update Beer</a></td></tr>
+			<tr><td bgcolor="#ccffcc"><a href="DeleteBeer.html">Delete Beer</a></td></tr>
+        </tbody>
+    </table>
+
+</td>
+<td>&nbsp;</td>
+</tr><tr>
+<td><div>
+<table border="1" cellpadding="1" cellspacing="1">
+<thead>
+</thead><tbody>
+<tr bgcolor="#ffcccc">
+	<td>open</td>
+	<td>/brewery/</td>
+	<td></td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>type</td>
+	<td>username</td>
+	<td>pduvall</td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>type</td>
+	<td>password</td>
+	<td>password</td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>clickAndWait</td>
+	<td>//input[@value='Login']</td>
+	<td></td>
+</tr>
+<tr title="false" bgcolor="#ffcccc">
+  <td>verifyTextPresent</td>
+  <td>Logged in as pduvall</td>
+  <td>false</td>
+</tr>
+</tbody></table>
+
+</div></td>
+<td>&nbsp;</td>
+</tr><tr>
+<td><div>
+<table border="1" cellpadding="1" cellspacing="1">
+<thead>
+</thead><tbody>
+<tr bgcolor="#ccffcc">
+	<td>open</td>
+	<td>/brewery/</td>
+	<td></td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>type</td>
+	<td>username</td>
+	<td>pduvall</td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>type</td>
+	<td>password</td>
+	<td>password</td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>clickAndWait</td>
+	<td>//input[@value='Login']</td>
+	<td></td>
+</tr>
+</tbody></table>
+
+</div></td>
+<td>&nbsp;</td>
+</tr><tr>
+<td><div>
+<table border="1" cellpadding="1" cellspacing="1">
+<thead>
+<tr bgcolor="#ccffcc"><td rowspan="1" colspan="3">AddBeer</td></tr>
+</thead><tbody>
+<tr bgcolor="#eeffee">
+	<td>open</td>
+	<td>/brewery/</td>
+	<td></td>
+</tr>
+<tr bgcolor="#ccffcc">
+	<td>assertTitle</td>
+	<td>Login</td>
+	<td></td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>clickAndWait</td>
+	<td>//input[@value='Login']</td>
+	<td></td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>clickAndWait</td>
+	<td>add</td>
+	<td></td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>type</td>
+	<td>beer_name</td>
+	<td>Beer One</td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>type</td>
+	<td>brewer</td>
+	<td>Brewery One</td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>clickAndWait</td>
+	<td>save</td>
+	<td></td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>open</td>
+	<td>/brewery/</td>
+	<td></td>
+</tr>
+<tr bgcolor="#ccffcc">
+	<td>assertTitle</td>
+	<td>Login</td>
+	<td></td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>clickAndWait</td>
+	<td>//input[@value='Login']</td>
+	<td></td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>clickAndWait</td>
+	<td>add</td>
+	<td></td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>type</td>
+	<td>beer_name</td>
+	<td>Beer Two</td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>type</td>
+	<td>brewer</td>
+	<td>Brewery Two</td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>click</td>
+	<td>save</td>
+	<td></td>
+</tr>
+<tr>
+</tr></tbody></table>
+
+</div></td>
+<td>&nbsp;</td>
+</tr><tr>
+<td><div>
+<table border="1" cellpadding="1" cellspacing="1">
+<thead>
+</thead><tbody>
+<tr bgcolor="#ccffcc">
+	<td>open</td>
+	<td>/brewery/</td>
+	<td></td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>type</td>
+	<td>username</td>
+	<td>pduvall</td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>type</td>
+	<td>password</td>
+	<td>password</td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>clickAndWait</td>
+	<td>//input[@value='Login']</td>
+	<td></td>
+</tr>
+</tbody></table>
+
+</div></td>
+<td>&nbsp;</td>
+</tr><tr>
+<td><div>
+<table border="1" cellpadding="1" cellspacing="1">
+<thead>
+</thead><tbody>
+<tr bgcolor="#ccffcc">
+	<td>open</td>
+	<td>/brewery/</td>
+	<td></td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>type</td>
+	<td>username</td>
+	<td>pduvall</td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>type</td>
+	<td>password</td>
+	<td>password</td>
+</tr>
+<tr bgcolor="#eeffee">
+	<td>clickAndWait</td>
+	<td>//input[@value='Login']</td>
+	<td></td>
+</tr>
+</tbody></table>
+
+</div></td>
+<td>&nbsp;</td>
+</tr></table></body></html>
