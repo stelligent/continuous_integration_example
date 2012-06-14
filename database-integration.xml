@@ -11,9 +11,10 @@
 		<import file="${basedir}/${common.configuration.file}" />
 
 	<target name="all" >
-		  <antcall target="db:create-tables"/>
-		  	  <antcall target="db:insert-data"/>
-		  	  	</target>
+		  <antcall target="db:create-database"/>
+		  	  <antcall target="db:create-tables"/>
+		  	  	  <antcall target="db:insert-data"/>
+		  	  	  	</target>
 
 	<dependset>
 		  <srcfilelist dir="${basedir}" files="${environment}.properties, default.properties"/>
