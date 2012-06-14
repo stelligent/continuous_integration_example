@@ -1,431 +1,431 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!--   Augments the book, "Continuous Integration" 
-  ISBN-10: 0321336380
-  ISBN-13: 978-0321336385
-  Copyright 2007 Paul M. Duvall All Rights Reserved.
-  Visit www.integratebutton.com 
---> 
+         ISBN-10: 0321336380
+           ISBN-13: 978-0321336385
+             Copyright 2007 Paul M. Duvall All Rights Reserved.
+               Visit www.integratebutton.com 
+               --> 
   <project name="database-build" default="all" basedir=".">
 
 	<import file="${basedir}/${common.environment.file}" />
-	<import file="${basedir}/${common.configuration.file}" />
+		<import file="${basedir}/${common.configuration.file}" />
 
 	<target name="all" >
-	  <antcall target="db:create-tables"/>
-	  <antcall target="db:insert-data"/>
-	</target>
+		  <antcall target="db:create-tables"/>
+		  	  <antcall target="db:insert-data"/>
+		  	  	</target>
 
 	<dependset>
-	  <srcfilelist dir="${basedir}" files="${environment}.properties, default.properties"/>
-	  <targetfileset dir="${filtered.sql.dir}"/>
-	</dependset>
+		  <srcfilelist dir="${basedir}" files="${environment}.properties, default.properties"/>
+		  	  <targetfileset dir="${filtered.sql.dir}"/>
+		  	  	</dependset>
 
 	<target name="filter-sql-files" description="Filter any *tokenized* .sql files">
-	  <echo>Filtering SQL files...</echo>
-	  <mkdir dir="${filtered.sql.dir}"/>
-	    <path id="database.dir.path">
-	      <pathelement path="${database.dir}"/>
-	    </path>
-	    <property name="database.dir.path" refid="database.dir.path"/>
-	    <copy todir="${filtered.sql.dir}" filtering="true">
-	      <fileset dir="${database.dir}" includes="*.sql" excludes=""/>
-  	      <!--<filterset refid="all.filter.tokens"/>-->
+		  <echo>Filtering SQL files...</echo>
+		  	  <mkdir dir="${filtered.sql.dir}"/>
+		  	  	    <path id="database.dir.path">
+		  	  	    	      <pathelement path="${database.dir}"/>
+		  	  	    	      	    </path>
+		  	  	    	      	    	    <property name="database.dir.path" refid="database.dir.path"/>
+		  	  	    	      	    	    	    <copy todir="${filtered.sql.dir}" filtering="true">
+		  	  	    	      	    	    	    	      <fileset dir="${database.dir}" includes="*.sql" excludes=""/>
+		  	  	    	      	    	    	    	        	      <!--<filterset refid="all.filter.tokens"/>-->
 	      <filterset>
-	        <filter token="database.dir" value="${database.dir}"/>
-              </filterset>
-            </copy>
-	    <replace file="${filtered.sql.dir}/insert-data.sql" token="\" value="/" />
-	</target>
+	      	        <filter token="database.dir" value="${database.dir}"/>
+	      	                      </filterset>
+	      	                                  </copy>
+	      	                                  	    <replace file="${filtered.sql.dir}/insert-data.sql" token="\" value="/" />
+	      	                                  	    	</target>
 
 	<target name="get-deps" unless="noget">
-      <mkdir dir="${lib.dir}"/>    
-	  <get dest="${lib.dir}/${hsql.jar}" usetimestamp="true" 
-	    ignoreerrors="true" src="${web.download.site}/${hsql.jar}">
-      </get>	
-	 </target>
+	      <mkdir dir="${lib.dir}"/>    
+	      	  <get dest="${lib.dir}/${hsql.jar}" usetimestamp="true" 
+	      	  	    ignoreerrors="true" src="${web.download.site}/${hsql.jar}">
+	      	  	          </get>	
+	      	  	          	 </target>
 
 	<!-- starts HSQL (this requires a CTRL-C to kill) -->
 	<target name="start-db" description="" depends="get-deps">
-		<java classname="org.hsqldb.Server" fork="true" failonerror="true" classpath="${lib.dir}" classpathref="hsql.class.path">
-			<classpath>
-				<pathelement location="${lib.dir}/${hsql.jar}" />
-				<pathelement path="${project.classpath}" />
-			</classpath>
-		</java>
-	</target>
+			<java classname="org.hsqldb.Server" fork="true" failonerror="true" classpath="${lib.dir}" classpathref="hsql.class.path">
+						<classpath>
+										<pathelement location="${lib.dir}/${hsql.jar}" />
+														<pathelement path="${project.classpath}" />
+																	</classpath>
+																			</java>
+																				</target>
 
 	<target name="db:drop-database" depends="filter-sql-files" description="DROP the database (tablespace and users)">
-	  <echo>Dropping database...</echo>
-	  <sql driver="${db.driver}" 
-	    url="${db.url.system}" 
-	    userid="${db.username.system}" 
-	    password="${db.password.system}" 
-	    classpathref="db.lib.path" 
-	    src="${filtered.sql.dir}/drop-database.sql" 
-	    delimiter=";"/>
-	</target>
+		  <echo>Dropping database...</echo>
+		  	  <sql driver="${db.driver}" 
+		  	  	    url="${db.url.system}" 
+		  	  	    	    userid="${db.username.system}" 
+		  	  	    	    	    password="${db.password.system}" 
+		  	  	    	    	    	    classpathref="db.lib.path" 
+		  	  	    	    	    	    	    src="${filtered.sql.dir}/drop-database.sql" 
+		  	  	    	    	    	    	    	    delimiter=";"/>
+		  	  	    	    	    	    	    	    	</target>
 
 	<target name="db:create-database" depends="filter-sql-files" description="CREATE the database (tablespaces and users)">
-	  <echo>Creating database...</echo>
-	  <sql driver="${db.driver}" 
-	    url="${db.url.system}" 
-	    userid="${db.username.system}" 
-	    password="${db.password.system}" 
-	    classpathref="db.lib.path" 
-	    src="${filtered.sql.dir}/create-database.sql" 
-	    delimiter=";"/>
-	</target>
+		  <echo>Creating database...</echo>
+		  	  <sql driver="${db.driver}" 
+		  	  	    url="${db.url.system}" 
+		  	  	    	    userid="${db.username.system}" 
+		  	  	    	    	    password="${db.password.system}" 
+		  	  	    	    	    	    classpathref="db.lib.path" 
+		  	  	    	    	    	    	    src="${filtered.sql.dir}/create-database-mysql.sql" 
+		  	  	    	    	    	    	    	    delimiter=";"/>
+		  	  	    	    	    	    	    	    	</target>
 
 	<target name="db:drop-tables" description="DROP db tables and cascade constraints">
-	  <echo>Dropping tables...</echo>
-	  <sql driver="${db.driver}"
-	    url="${db.url}"
-	    userid="${db.username}"
-	    password="${db.password}"
-	    classpathref="db.lib.path"
-	    src="${database.dir}/drop-tables.sql"
-	    delimiter=";"/>
-	</target>
+		  <echo>Dropping tables...</echo>
+		  	  <sql driver="${db.driver}"
+		  	  	    url="${db.url}"
+		  	  	    	    userid="${db.username}"
+		  	  	    	    	    password="${db.password}"
+		  	  	    	    	    	    classpathref="db.lib.path"
+		  	  	    	    	    	    	    src="${database.dir}/drop-tables.sql"
+		  	  	    	    	    	    	    	    delimiter=";"/>
+		  	  	    	    	    	    	    	    	</target>
 
 	<target name="db:create-tables" description="CREATE tables">
-	  <echo>Creating tables...</echo>
-	  <sql driver="${db.driver}"
-   	    url="${db.url}"
-	    userid="${db.username}"
-	    password="${db.password}"
-	    classpathref="db.lib.path"
-	    delimiter=";">
-	    <fileset file="${database.dir}/create-tables.sql"/>
-	  </sql>
-	</target>
+		  <echo>Creating tables...</echo>
+		  	  <sql driver="${db.driver}"
+		  	     	    url="${db.url}"
+		  	     	    	    userid="${db.username}"
+		  	     	    	    	    password="${db.password}"
+		  	     	    	    	    	    classpathref="db.lib.path"
+		  	     	    	    	    	    	    delimiter=";">
+		  	     	    	    	    	    	    	    <fileset file="${database.dir}/create-tables-mysql.sql"/>
+		  	     	    	    	    	    	    	    	  </sql>
+		  	     	    	    	    	    	    	    	  	</target>
 
 	<target name="db:drop-sequences" description="DROP sequences">
-	  <echo>Dropping sequences...</echo>
-	  <sql driver="${db.driver}"
-	    url="${db.url}"
-	    userid="${db.username}"
-	    password="${db.password}"
-	    classpathref="db.lib.path"
-	    src="${database.dir}/drop-sequences.sql"
-	    delimiter=";"/>
-	</target>
+		  <echo>Dropping sequences...</echo>
+		  	  <sql driver="${db.driver}"
+		  	  	    url="${db.url}"
+		  	  	    	    userid="${db.username}"
+		  	  	    	    	    password="${db.password}"
+		  	  	    	    	    	    classpathref="db.lib.path"
+		  	  	    	    	    	    	    src="${database.dir}/drop-sequences.sql"
+		  	  	    	    	    	    	    	    delimiter=";"/>
+		  	  	    	    	    	    	    	    	</target>
 
 	<target name="db:create-sequences" description="CREATE sequences">
-	  <echo>Creating sequences...</echo>
-	  <sql driver="${db.driver}"
-	    url="${db.url}"
-	    userid="${db.username}"
-	    password="${db.password}"
-	    classpathref="db.lib.path"
-	    src="${database.dir}/create-sequences.sql"
-	    delimiter=";"/>
-	</target>
+		  <echo>Creating sequences...</echo>
+		  	  <sql driver="${db.driver}"
+		  	  	    url="${db.url}"
+		  	  	    	    userid="${db.username}"
+		  	  	    	    	    password="${db.password}"
+		  	  	    	    	    	    classpathref="db.lib.path"
+		  	  	    	    	    	    	    src="${database.dir}/create-sequences.sql"
+		  	  	    	    	    	    	    	    delimiter=";"/>
+		  	  	    	    	    	    	    	    	</target>
 
 	<target name="db:drop-constraints" description="DROP constraints">
-		<echo>Dropping constraints...</echo>
-		<sql
-			driver="${db.driver}"
-			url="${db.url}"
-			userid="${db.username}"
-			password="${db.password}"
-			classpathref="db.lib.path"
-			src="${database.dir}/drop-constraints.sql"
-			delimiter=";"/>
-	</target>
+			<echo>Dropping constraints...</echo>
+					<sql
+								driver="${db.driver}"
+											url="${db.url}"
+														userid="${db.username}"
+																	password="${db.password}"
+																				classpathref="db.lib.path"
+																							src="${database.dir}/drop-constraints.sql"
+																										delimiter=";"/>
+																											</target>
 
 	<target name="db:create-constraints" description="CREATE constraints">
-		<echo>Creating constraints...</echo>
-		<sql
-			driver="${db.driver}"
-			url="${db.url}"
-			userid="${db.username}"
-			password="${db.password}"
-			classpathref="db.lib.path"
-			src="${database.dir}/create-constraints.sql"
-			delimiter=";"/>
-	</target>
+			<echo>Creating constraints...</echo>
+					<sql
+								driver="${db.driver}"
+											url="${db.url}"
+														userid="${db.username}"
+																	password="${db.password}"
+																				classpathref="db.lib.path"
+																							src="${database.dir}/create-constraints.sql"
+																										delimiter=";"/>
+																											</target>
 
 	<target name="db:drop-functions" description="DROP functions">
-		<echo>Dropping functions...</echo>
-		<sql
-			driver="${db.driver}"
-			url="${db.url}"
-			userid="${db.username}"
-			password="${db.password}"
-			classpathref="db.lib.path"
-			src="${database.dir}/drop-functions.sql"
-			delimiter=";"/>
-	</target>
+			<echo>Dropping functions...</echo>
+					<sql
+								driver="${db.driver}"
+											url="${db.url}"
+														userid="${db.username}"
+																	password="${db.password}"
+																				classpathref="db.lib.path"
+																							src="${database.dir}/drop-functions.sql"
+																										delimiter=";"/>
+																											</target>
 
 	<target name="db:create-functions" description="CREATE functions">
-		<echo>Creating functions...</echo>
-		<sql
-			driver="${db.driver}"
-			url="${db.url}"
-			userid="${db.username}"
-			password="${db.password}"
-			classpathref="db.lib.path"
-			src="${database.dir}/create-functions.sql"
-			delimiter="//"/>
-	</target>
+			<echo>Creating functions...</echo>
+					<sql
+								driver="${db.driver}"
+											url="${db.url}"
+														userid="${db.username}"
+																	password="${db.password}"
+																				classpathref="db.lib.path"
+																							src="${database.dir}/create-functions.sql"
+																										delimiter="//"/>
+																											</target>
 
 	<target name="db:drop-procedures" description="DROP procedures">
-		<echo>Dropping procedures...</echo>
-		<sql
-			driver="${db.driver}"
-			url="${db.url}"
-			userid="${db.username}"
-			password="${db.password}"
-			classpathref="db.lib.path"
-			src="${database.dir}/drop-procedures.sql"
-			delimiter=";"/>
-	</target>
-	
+			<echo>Dropping procedures...</echo>
+					<sql
+								driver="${db.driver}"
+											url="${db.url}"
+														userid="${db.username}"
+																	password="${db.password}"
+																				classpathref="db.lib.path"
+																							src="${database.dir}/drop-procedures.sql"
+																										delimiter=";"/>
+																											</target>
+																												
 	<target name="db:create-procedures" description="CREATE procedures">
-		<echo>Creating procedures...</echo>
-		<sql
-			driver="${db.driver}"
-			url="${db.url}"
-			userid="${db.username}"
-			password="${db.password}"
-			classpathref="db.lib.path"
-			src="${database.dir}/create-procedures.sql"
-			delimiter="//"/>
-	</target>
+			<echo>Creating procedures...</echo>
+					<sql
+								driver="${db.driver}"
+											url="${db.url}"
+														userid="${db.username}"
+																	password="${db.password}"
+																				classpathref="db.lib.path"
+																							src="${database.dir}/create-procedures.sql"
+																										delimiter="//"/>
+																											</target>
 
 	<target name="db:insert-data" depends="filter-sql-files" description="INSERT test data">
-		<echo>Inserting data...</echo>
-		<sql
-			driver="${db.driver}"
-			url="${db.url}"
-			userid="${db.username}"
-			password="${db.password}"
-			classpathref="db.lib.path"
-			src="${filtered.sql.dir}/insert-data.sql"/>
-	</target>
+			<echo>Inserting data...</echo>
+					<sql
+								driver="${db.driver}"
+											url="${db.url}"
+														userid="${db.username}"
+																	password="${db.password}"
+																				classpathref="db.lib.path"
+																							src="${filtered.sql.dir}/insert-data.sql"/>
+																								</target>
 
 	<target name="-common-create-objects">
-		<echo>Creating sequences, tables, comments, indexes, constraints, views...</echo>
-		<sql driver="${db.driver}" url="${db.url}" userid="${db.username}" password="${db.password}" classpathref="db.lib.path" delimiter=";">
-		  <fileset file="${database.dir}/create-sequences.sql" />
-		  <fileset file="${database.dir}/create-tables.sql"/>
-		  <fileset file="${database.dir}/create-comments.sql"/>
-		  <fileset file="${database.dir}/create-indexes.sql"/>
-		  <fileset file="${database.dir}/create-constraints.sql"/>
-		  <fileset file="${database.dir}/create-views.sql"/>
-		</sql>
-		<echo>Creating functions, procedures...</echo>
-		<sql driver="${db.driver}" url="${db.url}" userid="${db.username}" password="${db.password}" classpathref="db.lib.path" delimiter="//">
-		  <fileset file="${database.dir}/create-functions.sql"/>
-		  <fileset file="${database.dir}/create-procedures.sql"/>
-		</sql>
-		<antcall target="db:insert-data"/>
-		<antcall target="db:rollforward"/>
-	</target>
+			<echo>Creating sequences, tables, comments, indexes, constraints, views...</echo>
+					<sql driver="${db.driver}" url="${db.url}" userid="${db.username}" password="${db.password}" classpathref="db.lib.path" delimiter=";">
+							  <fileset file="${database.dir}/create-sequences.sql" />
+							  		  <fileset file="${database.dir}/create-tables.sql"/>
+							  		  		  <fileset file="${database.dir}/create-comments.sql"/>
+							  		  		  		  <fileset file="${database.dir}/create-indexes.sql"/>
+							  		  		  		  		  <fileset file="${database.dir}/create-constraints.sql"/>
+							  		  		  		  		  		  <fileset file="${database.dir}/create-views.sql"/>
+							  		  		  		  		  		  		</sql>
+							  		  		  		  		  		  				<echo>Creating functions, procedures...</echo>
+							  		  		  		  		  		  						<sql driver="${db.driver}" url="${db.url}" userid="${db.username}" password="${db.password}" classpathref="db.lib.path" delimiter="//">
+							  		  		  		  		  		  								  <fileset file="${database.dir}/create-functions.sql"/>
+							  		  		  		  		  		  								  		  <fileset file="${database.dir}/create-procedures.sql"/>
+							  		  		  		  		  		  								  		  		</sql>
+							  		  		  		  		  		  								  		  				<antcall target="db:insert-data"/>
+							  		  		  		  		  		  								  		  						<antcall target="db:rollforward"/>
+							  		  		  		  		  		  								  		  							</target>
 
 	<target name="-common-drop-objects">
-		<echo>Dropping views, functions, procedures, sequences, tables (indexes,constraints)...</echo>
-		<sql
-			driver="${db.driver}"
-			url="${db.url}"
-			userid="${db.username}"
-			password="${db.password}"
-			classpathref="db.lib.path"
-			delimiter=";">
-			<fileset file="${database.dir}/drop-views.sql"/>
-			<fileset file="${database.dir}/drop-functions.sql"/>
-			<fileset file="${database.dir}/drop-procedures.sql"/>
-			<fileset file="${database.dir}/drop-sequences.sql"/>
-			<fileset file="${database.dir}/drop-tables.sql"/>
-		</sql>
-	</target>
+			<echo>Dropping views, functions, procedures, sequences, tables (indexes,constraints)...</echo>
+					<sql
+								driver="${db.driver}"
+											url="${db.url}"
+														userid="${db.username}"
+																	password="${db.password}"
+																				classpathref="db.lib.path"
+																							delimiter=";">
+																										<fileset file="${database.dir}/drop-views.sql"/>
+																													<fileset file="${database.dir}/drop-functions.sql"/>
+																																<fileset file="${database.dir}/drop-procedures.sql"/>
+																																			<fileset file="${database.dir}/drop-sequences.sql"/>
+																																						<fileset file="${database.dir}/drop-tables.sql"/>
+																																								</sql>
+																																									</target>
 
 	<!-- ================================= 
-          target: db:create              
-         ================================= -->
+	               target: db:create              
+	                        ================================= -->
 	<target name="db:create" description="--> Create entire database (e.g. first time; or rebuild/redo)">
 		<antcall target="db:create-database"/>
-		<antcall target="-common-create-objects"/>
-	</target>
+				<antcall target="-common-create-objects"/>
+					</target>
 
 	<!-- ================================= 
-          target: db:drop              
-         ================================= -->
+	               target: db:drop              
+	                        ================================= -->
 	<target name="db:drop" description="--> Drop entire database (anytime)">
 		<antcall target="db:drop-database"/>
-	</target>
+			</target>
 
 	<!-- ================================= 
-          target: db:rebuild
-          
+	               target: db:rebuild
+	                         
           **NOTE** When using the "rollforward" functionality be sure that you can perform this 
-          target consecutively (e.g. ant db:rebuild db:rebuild) without errors.
-          ________________________________
-          @rollforward.list - a comma-separated list of files within ${database.dir} to 
-          							  be used when utilizing the "roll forward" functionality. 
-          							  Use this to apply DB Changes.
-          @rollforward.clean.list - a comma-separated list of files within ${database.dir} to 
-          							  be used when utilizing the "roll forward" functionality. 
-          							  Use this to remove DB Changes. 
-         ================================= -->
+                    target consecutively (e.g. ant db:rebuild db:rebuild) without errors.
+                              ________________________________
+                                        @rollforward.list - a comma-separated list of files within ${database.dir} to 
+                                                  							  be used when utilizing the "roll forward" functionality. 
+                                                  							            							  Use this to apply DB Changes.
+                                                  							            							            @rollforward.clean.list - a comma-separated list of files within ${database.dir} to 
+                                                  							            							                      							  be used when utilizing the "roll forward" functionality. 
+                                                  							            							                      							            							  Use this to remove DB Changes. 
+                                                  							            							                      							            							           ================================= -->
 	<target name="db:rebuild" depends="db:clean-rollforward" description="recreate schema objects, then insert data">
-		<echo>Rebuilding database...</echo>
-		<antcall target="-common-drop-objects"/>
-		<antcall target="-common-create-objects"/>
-	</target>
+			<echo>Rebuilding database...</echo>
+					<antcall target="-common-drop-objects"/>
+							<antcall target="-common-create-objects"/>
+								</target>
 
 	<!-- ================================= 
-          target: db:refresh
-          
+	               target: db:refresh
+	                         
           **NOTE** When using the "rollforward" functionality be sure that you can perform this 
-          target consecutively (e.g. ant db:refresh db:refresh) without errors.
-         ________________________________
-          @rollforward.refresh.list - a comma-separated list of files within ${database.dir} to 
-          							  be used when utilizing the "roll forward" functionality
-         ================================= -->
+                    target consecutively (e.g. ant db:refresh db:refresh) without errors.
+                             ________________________________
+                                       @rollforward.refresh.list - a comma-separated list of files within ${database.dir} to 
+                                                 							  be used when utilizing the "roll forward" functionality
+                                                 							           ================================= -->
 	<target name="db:refresh" description="truncate tables, reset sequences, then insert data">
-		<echo>Refreshing table data, sequences...</echo>
-		<!-- 
-			When using this target with your rollforward scripts you'll want to manually populate the rollforward SQL file 
-			to handle inserting data when the rollforward SQL scripts have modified the schema. 
-			
+			<echo>Refreshing table data, sequences...</echo>
+					<!-- 
+					     			When using this target with your rollforward scripts you'll want to manually populate the rollforward SQL file 
+					     						to handle inserting data when the rollforward SQL scripts have modified the schema. 
+					     									
 			Scenario: You're working on Release 1.0 is captured within your create-*.sql, drop-*.sql & insert-data.sql. Your currently working on 
-			Release 1.1 which inserts an additional table or modifies an existing table. 
-			So, you'll need to include insert SQL statements for this NEW OR MODIFIED table by specifying the filename(s) for 
-			'${rollforward.refresh.fileset}' property within your "${environment}.properties" file.
-		-->
+						Release 1.1 which inserts an additional table or modifies an existing table. 
+									So, you'll need to include insert SQL statements for this NEW OR MODIFIED table by specifying the filename(s) for 
+												'${rollforward.refresh.fileset}' property within your "${environment}.properties" file.
+														-->
 		<property name="rollforward.refresh.list" value="_"/>
-		<echo message="rollforward.refresh.list=${rollforward.refresh.list}">
-		</echo>
-		<fileset dir="${database.dir}" includes="${rollforward.refresh.list}" id="rollforward.refresh.fileset">
-		</fileset>
-		<property name="rollforward.refresh.fileset" refid="rollforward.refresh.fileset">
-		</property>
-		<echo message="rollforward.refresh.fileset=${rollforward.refresh.fileset}">
-		</echo>
-		<sql
-			driver="${db.driver}"
-			url="${db.url}"
-			userid="${db.username}"
-			password="${db.password}"
-			classpathref="db.lib.path"
-			delimiter=";">
-			<fileset file="${database.dir}/drop-sequences.sql"/>
-			<fileset file="${database.dir}/create-sequences.sql"/>
-			<fileset file="${database.dir}/truncate-tables.sql"/>
-			<fileset refid="rollforward.refresh.fileset"/>
-		</sql>
-	</target>
+				<echo message="rollforward.refresh.list=${rollforward.refresh.list}">
+						</echo>
+								<fileset dir="${database.dir}" includes="${rollforward.refresh.list}" id="rollforward.refresh.fileset">
+										</fileset>
+												<property name="rollforward.refresh.fileset" refid="rollforward.refresh.fileset">
+														</property>
+																<echo message="rollforward.refresh.fileset=${rollforward.refresh.fileset}">
+																		</echo>
+																				<sql
+																							driver="${db.driver}"
+																										url="${db.url}"
+																													userid="${db.username}"
+																																password="${db.password}"
+																																			classpathref="db.lib.path"
+																																						delimiter=";">
+																																									<fileset file="${database.dir}/drop-sequences.sql"/>
+																																												<fileset file="${database.dir}/create-sequences.sql"/>
+																																															<fileset file="${database.dir}/truncate-tables.sql"/>
+																																																		<fileset refid="rollforward.refresh.fileset"/>
+																																																				</sql>
+																																																					</target>
 
 	<target name="db:update" if="isBuildMachine" description="only if ${isBuildMachine}, perform db:rebuild">
-		<antcall target="db:rebuild"/>
-	</target>
+			<antcall target="db:rebuild"/>
+				</target>
 
 	<target name="db:redo" depends="filter-sql-files, db:drop, db:create" description="recreate the database, then insert test data">
-		<echo>Redoing database...</echo>
-	</target>
+			<echo>Redoing database...</echo>
+				</target>
 
 	<target name="db:clean-rollforward">
-		<property name="rollforward.clean.list" value="_"/>
-		<echo message="rollforward.clean.list=${rollforward.clean.list}">
-		</echo>
-		<fileset dir="${database.dir}" includes="${rollforward.clean.list}" id="rollforward.clean.fileset">
-		</fileset>
-		<property name="rollforward.clean.fileset" refid="rollforward.clean.fileset">
-		</property>
-		<echo message="rollforward.clean.fileset=${rollforward.clean.fileset}">
-		</echo>
-		<sql
-			driver="${db.driver}"
-			url="${db.url}"
-			userid="${db.username.system}"
-			password="${db.password.system}"
-			classpathref="db.lib.path"
-			delimiter=";">
-			<fileset refid="rollforward.clean.fileset"/>
-		</sql>
-	</target>
+			<property name="rollforward.clean.list" value="_"/>
+					<echo message="rollforward.clean.list=${rollforward.clean.list}">
+							</echo>
+									<fileset dir="${database.dir}" includes="${rollforward.clean.list}" id="rollforward.clean.fileset">
+											</fileset>
+													<property name="rollforward.clean.fileset" refid="rollforward.clean.fileset">
+															</property>
+																	<echo message="rollforward.clean.fileset=${rollforward.clean.fileset}">
+																			</echo>
+																					<sql
+																								driver="${db.driver}"
+																											url="${db.url}"
+																														userid="${db.username.system}"
+																																	password="${db.password.system}"
+																																				classpathref="db.lib.path"
+																																							delimiter=";">
+																																										<fileset refid="rollforward.clean.fileset"/>
+																																												</sql>
+																																													</target>
 
 	<target name="db:rollforward">
-		<property name="rollforward.list" value="_"/>
-		<echo message="rollforward.list=${rollforward.list}">
-		</echo>
-		<fileset dir="${database.dir}" includes="${rollforward.list}" id="rollforward.fileset">
-		</fileset>
-		<property name="rollforward.fileset" refid="rollforward.fileset">
-		</property>
-		<echo message="rollforward.fileset=${rollforward.fileset}">
-		</echo>
-		<sql
-			driver="${db.driver}"
-			url="${db.url}"
-			userid="${db.username.system}"
-			password="${db.password.system}"
-			classpathref="db.lib.path"
-			delimiter=";">
-			<fileset refid="rollforward.fileset"/>
-		</sql>
-	</target>
+			<property name="rollforward.list" value="_"/>
+					<echo message="rollforward.list=${rollforward.list}">
+							</echo>
+									<fileset dir="${database.dir}" includes="${rollforward.list}" id="rollforward.fileset">
+											</fileset>
+													<property name="rollforward.fileset" refid="rollforward.fileset">
+															</property>
+																	<echo message="rollforward.fileset=${rollforward.fileset}">
+																			</echo>
+																					<sql
+																								driver="${db.driver}"
+																											url="${db.url}"
+																														userid="${db.username.system}"
+																																	password="${db.password.system}"
+																																				classpathref="db.lib.path"
+																																							delimiter=";">
+																																										<fileset refid="rollforward.fileset"/>
+																																												</sql>
+																																													</target>
 
 	<target name="db:rollforward-0.1">
-		<sql
-			driver="${db.driver}"
-			url="${db.url}"
-			userid="${db.username.system}"
-			password="${db.password.system}"
-			classpathref="db.lib.path"
-			delimiter=";">
-			<fileset file="${filtered.sql.dir}/rollforward-0.1.sql"/>
-		</sql>
-	</target>
+			<sql
+						driver="${db.driver}"
+									url="${db.url}"
+												userid="${db.username.system}"
+															password="${db.password.system}"
+																		classpathref="db.lib.path"
+																					delimiter=";">
+																								<fileset file="${filtered.sql.dir}/rollforward-0.1.sql"/>
+																										</sql>
+																											</target>
 
 	<target name="db:rollforward-0.2">
-		<sql
-			driver="${db.driver}"
-			url="${db.url}"
-			userid="${db.username.system}"
-			password="${db.password.system}"
-			classpathref="db.lib.path"
-			delimiter=";">
-			<fileset file="${filtered.sql.dir}/rollforward-0.2.sql"/>
-		</sql>
-	</target>
-	<target name="db:pre-migrate" description="recreate tables and sequences">
-		<sql
-			driver="${db.driver}"
-			url="${db.url}"
-			userid="${db.username}"
-			password="${db.password}"
-			classpathref="db.lib.path"
-			delimiter=";">
-			<fileset file="${database.dir}/drop-sequences.sql"/>
-			<fileset file="${database.dir}/drop-tables.sql"/>
-			<fileset file="${database.dir}/create-sequences.sql"/>
-			<fileset file="${database.dir}/create-tables.sql"/>
-			<fileset file="${database.dir}/create-comments.sql"/>
-		</sql>
-	</target>
+			<sql
+						driver="${db.driver}"
+									url="${db.url}"
+												userid="${db.username.system}"
+															password="${db.password.system}"
+																		classpathref="db.lib.path"
+																					delimiter=";">
+																								<fileset file="${filtered.sql.dir}/rollforward-0.2.sql"/>
+																										</sql>
+																											</target>
+																												<target name="db:pre-migrate" description="recreate tables and sequences">
+																														<sql
+																																	driver="${db.driver}"
+																																				url="${db.url}"
+																																							userid="${db.username}"
+																																										password="${db.password}"
+																																													classpathref="db.lib.path"
+																																																delimiter=";">
+																																																			<fileset file="${database.dir}/drop-sequences.sql"/>
+																																																						<fileset file="${database.dir}/drop-tables.sql"/>
+																																																									<fileset file="${database.dir}/create-sequences.sql"/>
+																																																												<fileset file="${database.dir}/create-tables.sql"/>
+																																																															<fileset file="${database.dir}/create-comments.sql"/>
+																																																																	</sql>
+																																																																		</target>
 
 	<target name="db:post-migrate" description="add constraints and indexes">
-		<sql
-			driver="${db.driver}"
-			url="${db.url}"
-			userid="${db.username}"
-			password="${db.password}"
-			classpathref="db.lib.path"
-			delimiter=";">
-			<fileset file="${database.dir}/create-constraints.sql"/>
-			<fileset file="${database.dir}/create-indexes.sql"/>
-		</sql>
-	</target>
+			<sql
+						driver="${db.driver}"
+									url="${db.url}"
+												userid="${db.username}"
+															password="${db.password}"
+																		classpathref="db.lib.path"
+																					delimiter=";">
+																								<fileset file="${database.dir}/create-constraints.sql"/>
+																											<fileset file="${database.dir}/create-indexes.sql"/>
+																													</sql>
+																														</target>
 
 
 	<!-- ================================= 
-          target: db:run-mysql              
-         ================================= -->
+	               target: db:run-mysql              
+	                        ================================= -->
 	<target name="db:run-mysql" description="--> Launch DB Vendor command line tool">
 		<exec executable="cmd.exe" spawn="true">
-			<arg line="/C start mysql.exe --host=${db.hostname} --user=${db.username.system} --password=${db.password.system}"/>
-		</exec>
-	</target>
-</project>
+					<arg line="/C start mysql.exe --host=${db.hostname} --user=${db.username.system} --password=${db.password.system}"/>
+							</exec>
+								</target>
+								</project>
