@@ -1,0 +1,380 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  
+  "Description" : "CloudFormation Template to provision Manatee Production instance",
+  
+  "Parameters" : {
+	"KeyName" : {
+      "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the instances",
+      "Type" : "String",
+      "Default" : "manatee_dev",
+      "MinLength": "1",
+      "MaxLength": "64",
+      "AllowedPattern" : "[-_ a-zA-Z0-9]*",
+      "ConstraintDescription" : "can contain only alphanumeric characters, spaces, dashes and underscores."
+    },
+    "InstanceType" : {
+	  "Type" : "String",
+	  "Default" : "c1.medium"
+	},
+	"ApplicationName" : {
+	  "Type" : "String",
+	  "Default" : "manateeees"
+	},
+	"HostedZone" : {
+	  "Type" : "String",
+	  "Default" : "oneclickdeployment.com"
+	},
+	"JenkinsIP" : {
+      "Type" : "String",
+      "Default" : "23.23.188.36"
+    },
+	"SvnID" : {
+      "Description" : "Sea2Shore Svn Username",
+      "Type" : "String",
+      "Default" : "paul.duvall"
+    },
+	"SvnPassword" : {
+      "Description" : "Sea2Shore Svn User Password",
+      "Type" : "String",
+      "NoEcho" : "TRUE",
+      "Default" : "G6bIGZS4gNFp"
+    },
+	"S3Bucket" : {
+	  "Description" : "Artifact Bucket",
+	  "Type" : "String",
+	  "Default" : "sea2shore"
+    }
+  },
+
+  "Mappings" : {
+	"AWSInstanceType2Arch" : {
+      "t1.micro"    : { "Arch" : "32" },
+      "m1.small"    : { "Arch" : "32" },
+      "m1.large"    : { "Arch" : "64" },
+      "m1.xlarge"   : { "Arch" : "64" },
+      "m2.xlarge"   : { "Arch" : "64" },
+      "m2.2xlarge"  : { "Arch" : "64" },
+      "m2.4xlarge"  : { "Arch" : "64" },
+      "c1.medium"   : { "Arch" : "32" },
+      "c1.xlarge"   : { "Arch" : "64" },
+      "cc1.4xlarge" : { "Arch" : "64" }
+    },
+    "AWSRegionArch2AMI" : {
+      "us-east-1"      : { "32" : "ami-7f418316", "64" : "ami-7341831a" },
+      "us-west-1"      : { "32" : "ami-951945d0", "64" : "ami-971945d2" },
+      "us-west-2"      : { "32" : "ami-16fd7026", "64" : "ami-10fd7020" },
+      "eu-west-1"      : { "32" : "ami-24506250", "64" : "ami-20506254" },
+      "ap-southeast-1" : { "32" : "ami-74dda626", "64" : "ami-7edda62c" },
+      "ap-northeast-1" : { "32" : "ami-dcfa4edd", "64" : "ami-e8fa4ee9" }
+    }
+  },
+  "Resources" : {
+	
+	"ManateeUser" : {
+      "Type" : "AWS::IAM::User",
+      "Properties" : {
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "root",
+          "PolicyDocument": { "Statement":[
+          {
+            "Effect":"Allow",
+            "Action":"cloudformation:DescribeStackResource",
+            "Resource":"*"
+          },
+          {
+            "Effect":"Allow",
+            "Action":"s3:*",
+            "Resource":["arn:aws:s3:::wildtracks_db_backup","arn:aws:s3:::wildtracks_db_backup/*"]
+         }]}
+        }]
+      }
+    },
+
+	"PrivateBucketPolicy" : {
+      "Type" : "AWS::S3::BucketPolicy",
+      "Properties" : {
+        "PolicyDocument": {
+          "Id":"PrivateBucketPolicy",
+          "Statement":[
+ 		    {
+              "Sid":"ReadAccess",
+	          "Action":["s3:GetObject"],
+	          "Effect":"Allow",
+	          "Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3Bucket" } , "/*" ]]},
+	          "Principal":{ "AWS": { "Fn::GetAtt" : [ "ManateeUser", "Arn" ]} }
+            },
+			{
+			  "Sid":"MakeWarAccessible",
+	          "Action":["s3:GetObject"],
+	          "Effect":"Allow",
+	          "Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3Bucket" } , "/wildtracks.war" ]]},
+	          "Principal":{ "AWS": "*" }
+			}
+		  ]
+        },
+        "Bucket" : {"Ref" : "S3Bucket"}
+      }
+    },
+	
+	"ManateeKeys" : {
+	  "Type" : "AWS::IAM::AccessKey",
+      "Properties" : {
+	    "UserName" : { "Ref" : "ManateeUser" }
+	  }
+	},
+	
+	"ManateeDNS" : {
+      "Type" : "AWS::Route53::RecordSetGroup",
+	  "Properties" : {
+	    "HostedZoneName" : { "Fn::Join" : [ "", [ {"Ref" : "HostedZone"}, "." ]]},
+	    "RecordSets" : [
+		  {
+			"Name" : { "Fn::Join" : ["", [ { "Ref" : "ApplicationName" }, ".", { "Ref" : "HostedZone" }, "." ]]},
+			"Type" : "A",
+			"TTL"  : "900",
+			"ResourceRecords" : [ { "Ref" : "IPAddress" } ]
+		  }]
+	  }
+	},
+	
+	"WebServer": {  
+      "Type": "AWS::EC2::Instance",
+	  "DependsOn" : "PrivateBucketPolicy",
+	  "Metadata" : {
+	    "AWS::CloudFormation::Init" : {
+		  "config" : {
+			"packages" : {
+			  "yum" : {
+			    "subversion"          : [],
+			    "java-1.6.0-openjdk"  : [],
+			    "httpd"               : [],
+			    "tomcat6"             : [],
+			    "postgresql8*"        : [],
+			    "libxml2-devel"       : [],
+			    "mod_proxy_html"      : [],
+			    "perl"                : []
+			  }
+			},
+			"sources" : {
+			  "/usr/bin/" : "https://s3.amazonaws.com/sea2shore/resources/binaries/groovy-binary-1.8.2.zip"
+			},
+			"files" : {
+			  "/home/ec2-user/id_rsa.pub" : {
+				"source" : { "Fn::Join" : ["", ["https://s3.amazonaws.com/", { "Ref" : "S3Bucket" }, "/private/id_rsa.pub"]]},
+	            "mode"   : "000500",
+	            "owner"  : "root",
+	            "group"  : "root",
+				"authentication" : "S3AccessCreds"
+	          },
+			  "/home/ec2-user/deploy_wildtracks.sh" : {
+				"source" : "https://s3.amazonaws.com/sea2shore/deploy_wildtracks.sh",
+				"mode"   : "000500",
+	            "owner"  : "ec2-user",
+	            "group"  : "ec2-user",
+			    "authentication" : "S3AccessCreds"
+			  },
+			  "/home/ec2-user/start_wildtracks.sh" : {
+				"source" : "https://s3.amazonaws.com/sea2shore/start_wildtracks.sh",
+	            "mode"   : "000500",
+	            "owner"  : "ec2-user",
+	            "group"  : "ec2-user",
+				"authentication" : "S3AccessCreds"
+			  },
+	 	      "/etc/httpd/conf/virtualhosts" : {
+	            "content" : { "Fn::Join" : ["", [
+	              "NameVirtualHost *:80\n",
+	              "<VirtualHost *:80>\n",
+	              "ServerName ", { "Fn::Join" : [ ".", [ { "Ref" : "ApplicationName" }, { "Ref" : "HostedZone" }]]}, "\n",
+	              "ServerAlias ", { "Fn::Join" : [ ".", [ { "Ref" : "ApplicationName" }, { "Ref" : "HostedZone" }]]}, "\n",
+	              "AllowCONNECT 8080\n",
+	              "ProxyPass / http://localhost:8080/\n",
+	              "ProxyPassReverse / http://localhost:8080/\n",
+	              "</VirtualHost>\n"
+	            ]]},
+	                "mode"   : "000777",
+	                "owner"  : "root",
+	                "group"  : "root"
+	          },
+			  "/usr/local/sbin/s3_file_upload.groovy" : { 
+	            "source" : "https://s3.amazonaws.com/sea2shore/s3_file_upload.groovy", 
+	            "mode"   : "00555", 
+	            "owner"  : "root", 
+	            "group"  : "root",
+				"authentication" : "S3AccessCreds"
+	          },
+			  "/etc/cron.daily/upload_manatee_backup_to_s3_cron_wrapper.sh" : {
+	            "source" : "https://s3.amazonaws.com/sea2shore/upload_manatee_backup_to_s3_cron_wrapper.sh", 
+	            "mode"   : "000500",
+	            "owner"  : "root",
+	            "group"  : "root",
+	  			"authentication" : "S3AccessCreds"
+	          },
+			  "/usr/local/sbin/upload_manatee_backup_to_s3.sh" : {
+	            "source" : "https://s3.amazonaws.com/sea2shore/upload_manatee_backup_to_s3.sh",
+	            "mode"   : "000555",
+	            "owner"  : "root",
+	            "group"  : "root",
+			   	"authentication" : "S3AccessCreds"
+	          },
+			  "/home/ec2-user/.sarvatix/manatees/wildtracks/database_backups/script/db_backup.sh" : {
+	            "source" : "https://s3.amazonaws.com/sea2shore/db_backup.sh",
+	            "mode"   : "000777",
+	            "owner"  : "root",
+	            "group"  : "root",
+				"authentication" : "S3AccessCreds"
+	          },
+			  "/home/ec2-user/.sarvatix/manatees/wildtracks/wildtracks-config.properties" : {
+	            "source" : "https://s3.amazonaws.com/sea2shore/wildtracks-config.properties",
+	            "mode"   : "000777",
+	            "owner"  : "root",
+	            "group"  : "root",
+				"authentication" : "S3AccessCreds"
+	          },
+			  "/home/ec2-user/createDbAndOwner.sql" : {
+	            "source" : "https://s3.amazonaws.com/sea2shore/createDbAndOwner.sql",
+	            "mode"   : "000777",
+	            "owner"  : "root",
+	            "group"  : "root",
+				"authentication" : "S3AccessCreds"
+	          }
+			}
+		  }
+	    },
+		"AWS::CloudFormation::Authentication" : {
+		  "S3AccessCreds" : {
+		    "type" : "S3",
+		    "accessKeyId" : { "Ref" : "ManateeKeys" },
+		    "secretKey" : {"Fn::GetAtt": ["ManateeKeys", "SecretAccessKey"]},
+		    "buckets" : [ { "Ref" : "S3Bucket" } ]
+		  }
+		}
+	  },
+	  "Properties": {
+		"ImageId" : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" },
+	                { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] },
+		"InstanceType"   : { "Ref" : "InstanceType" },
+		"SecurityGroups" : [ { "Ref" : "FrontendGroup" } ],
+		"KeyName"        : { "Ref" : "KeyName" },
+		"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+		  "#!/bin/bash -v\n",
+		  "ln -sf /usr/share/zoneinfo/EST5EDT /etc/localtime\n",
+	      "date > /home/ec2-user/starttime\n",
+
+		  "mkdir -p /home/ec2-user/sarvatix_bin\n",
+	      "mkdir -p /home/ec2-user/.sarvatix/manatees/wildtracks/database_backups/backup_archive\n",
+	      "mkdir -p /home/ec2-user/.sarvatix/manatees/wildtracks/database_backups/script\n",
+		  "mkdir -p /usr/share/tomcat6/.sarvatix/manatees/wildtracks\n",
+	
+		  "yum update -y aws-cfn-bootstrap\n",
+		  
+		  "# Install Packages\n",
+		  "/opt/aws/bin/cfn-init -v -s ", { "Ref" : "AWS::StackName" }, " -r WebServer ",
+		  "    --access-key ", { "Ref" : "ManateeKeys" },
+		  "    --secret-key ", { "Fn::GetAtt" : [ "ManateeKeys", "SecretAccessKey" ]},
+		  "    --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
+		  
+		  "cd /home/ec2-user\n",
+		
+	      "cat /etc/httpd/conf/virtualhosts >> /etc/httpd/conf/httpd.conf\n",
+	
+		  "# Configure Postgresql\n",
+		  "service postgresql initdb\n",
+		  
+		  "svn export http://subversion.assembla.com/svn/manatees/trunk/src/config/pg_hba.conf --username ", { "Ref" : "SvnID" }, " --password ", { "Ref" : "SvnPassword" }, " --non-interactive\n",
+	      "mv pg_hba.conf /var/lib/pgsql/data/\n",
+
+		  "echo -e '\nhost all all ", { "Fn::Join" : [ "", [ { "Ref" : "JenkinsIP" }, "/32" ]]}, " trust\n' >> /var/lib/pgsql/data/pg_hba.conf\n",
+	      "echo -e \"listen_addresses='*'\n\" >> /var/lib/pgsql/data/postgresql.conf\n",
+	      "service postgresql start\n",
+	      "sleep 20\n",
+	      "echo CREATE USER root | psql -U postgres\n",
+	      "psql < createDbAndOwner.sql -U postgres\n",
+	
+		  "# Set AWS Access Credentials\n",
+	      "echo -e 'export AMAZON_ACCESS_KEY=", { "Ref" : "ManateeKeys" }, "\n' >> /root/.ec2_access_keys\n",
+	      "echo -e 'export AMAZON_SECRET_ACCESS_KEY=", {"Fn::GetAtt": ["ManateeKeys", "SecretAccessKey"]}, "\n' >> /root/.ec2_access_keys\n",
+	      "echo -e 'export AMAZON_ACCESS_KEY=", { "Ref" : "ManateeKeys" }, "\n' >> /home/ec2-user/.bash_profile\n",
+	      "echo -e 'export AMAZON_SECRET_ACCESS_KEY=", {"Fn::GetAtt": ["ManateeKeys", "SecretAccessKey"]}, "\n' >> /home/ec2-user/.bash_profile\n",
+
+	      "mv /home/ec2-user/sarvatix_bin /usr/share/tomcat6/sarvatix_bin\n",
+	      "mv /home/ec2-user/.sarvatix /usr/share/tomcat6/.sarvatix\n",
+
+	      "# Set Permissions\n",
+	      "chmod 777 /usr/share/tomcat6/.sarvatix/manatees/wildtracks/database_backups/script/db_backup.sh\n",
+	      "chmod -R 500 /usr/share/tomcat6/sarvatix_bin\n",
+	      "chmod -R 700 /usr/share/tomcat6/.sarvatix\n",
+	      "chown -R tomcat:tomcat /usr/share/tomcat6/\n",
+	      
+	 	  "# Add Public key for passwordless authentication from Jenkins Instance\n",
+		  "cat /home/ec2-user/id_rsa.pub >> /home/ec2-user/.ssh/authorized_keys\n",
+	
+		  "# Disable tty for ec2-user\n",
+		  "echo \"Defaults:%ec2-user !requiretty\" >> /etc/sudoers\n",
+		  "echo \"Defaults:ec2-user !requiretty\" >> /etc/sudoers\n",
+
+		  "service tomcat6 restart\n",
+
+	      "/opt/aws/bin/cfn-signal", " -e 0", " '", { "Ref" : "WaitHandle" }, "'","\n",
+
+	      "date > /home/ec2-user/stoptime\n"
+		]]}}		
+	  }
+	},
+	
+	"FrontendGroup" : {
+	  "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+	    "GroupDescription" : "Enable SSH Access",
+		"SecurityGroupIngress" : [
+		  { "IpProtocol" : "tcp", "FromPort" : "22", "ToPort" : "22", "CidrIp" : "0.0.0.0/0" },
+		  { "IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : "0.0.0.0/0" },
+          { "IpProtocol" : "tcp", "FromPort" : "5432", "ToPort" : "5432", "CidrIp" : { "Fn::Join" : [ "", [{"Ref" : "JenkinsIP"}, "/32" ]]}},
+		  { "IpProtocol" : "tcp", "FromPort" : "8080", "ToPort" : "8080", "CidrIp" : "0.0.0.0/0" }
+		]
+	  }
+	},
+	
+	"IPAddress" : {
+	  "Type" : "AWS::EC2::EIP"
+	},
+	
+	"IPAssociation" : {
+	  "Type" : "AWS::EC2::EIPAssociation",
+	  "Properties" : {
+		"InstanceId" : { "Ref" : "WebServer" },
+		"EIP" : { "Ref" : "IPAddress" }
+	  }
+	},
+	
+	"WaitHandle" : {
+      "Type" : "AWS::CloudFormation::WaitConditionHandle"
+    },
+    
+    "WaitCondition" : {
+      "Type" : "AWS::CloudFormation::WaitCondition",
+      "DependsOn" : "WebServer",
+      "Properties" : {
+        "Handle" : { "Ref" : "WaitHandle" },
+        "Timeout" : "900"
+      }
+    }
+  },
+
+  "Outputs" : {
+    "ArtifactBucket" : {
+      "Value" : { "Ref" : "S3Bucket" }
+    },
+	"StackName" : {
+      "Value" : { "Ref" : "AWS::StackName" }
+    },
+    "Domain" : {
+      "Value" : { "Fn::Join" : ["", [{ "Ref" : "ApplicationName" }, ".", { "Ref" : "HostedZone" }]] },
+      "Description" : "Full domain"
+    },
+	"InstanceIPAddress" : {
+      "Value" : { "Ref" : "IPAddress" }
+    }
+  }
+}

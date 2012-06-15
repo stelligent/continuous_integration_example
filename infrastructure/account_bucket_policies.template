@@ -1,0 +1,38 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  
+  "Description" : "CloudFormation Template to create basic account resource policies",
+  
+  "Parameters" : {
+	"S3Bucket" : {
+	  "Description" : "Public S3 bucket for storing artifacts",
+      "Type" : "String",
+      "Default" : "sea2shore",
+      "ConstraintDescription" : "Must be a valid S3 Bucket"
+	}
+  },
+
+  "Resources" : {
+	"S3BucketPolicy" : {
+	  "Type" : "AWS::S3::BucketPolicy",
+	  "Properties" : {
+	    "PolicyDocument": {
+	      "Id":"PublicBucketPolicy",
+	      "Statement":[
+		    {
+	          "Sid":"ReadAccess",
+	          "Action":["s3:GetObject"],
+	          "Effect":"Allow",
+	          "Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3Bucket" } , "/*"]]},
+	          "Principal":{ "AWS": "*" }
+	        }
+		  ]
+	    },
+	    "Bucket" : {"Ref" : "S3Bucket"}
+	  }
+	}
+  },
+
+  "Outputs" : {
+  }
+}
