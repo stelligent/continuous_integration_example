@@ -23,7 +23,7 @@
 
 <div class="heading">
     <div class="shell">
-        <h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Online Brewery Manager</h2>
+        <h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Brewery Manager</h2>
     </div>
 </div>
 
