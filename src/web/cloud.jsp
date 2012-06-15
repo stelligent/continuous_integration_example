@@ -19,7 +19,28 @@
     <script src="js/functions.js" type="text/javascript"></script>
 
 </head>
-<BODY BGCOLOR="White" LINK="#FFAA00" VLINK="#FFAA00" ALINK="#330066" LEFTMARGIN=0 TOPMARGIN=0 MARGINWIDTH="0" MARGINHEIGHT="0">
+<body>
+<div class="header">
+    <div class="shell">
+        <h1 id="logo" class="notext"><a href="http://stelligent.com/">Stelligent</a></h1>
+
+        <h2 class="slogan notext"><a href="http://stelligent.com/">Production-Ready Software Delivered Every Day</a>
+        </h2>
+    </div>
+</div>
+
+<div class="heading">
+    <div class="shell">
+        <h2>Stelligent Cloud ROI Calculator</h2>
+    </div>
+</div>
+
+<div class="container">
+<div class="shell">
+<div class="main">
+    <div class="main-t">
+        <div class="main-b">
+
 <FORM action="/brewery/Controller" method="post">
 <INPUT TYPE="hidden" NAME="FROM_PAGE" VALUE="index">
 <INPUT TYPE="hidden" NAME="TO_PAGE" VALUE="beer">
@@ -36,5 +57,13 @@
   </tr>
 </table>
 </FORM>
+
+    </div>
+</div>
+</div>
+</div>
+</div>
+
+
 </body>
 </html>
