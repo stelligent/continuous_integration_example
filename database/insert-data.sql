@@ -1,9 +1,9 @@
-INSERT INTO beer(id, beer_name, brewer, date_received) VALUES (1, 'Sam Adams Lager','Virginia Beer Company','2005-12-09');
-INSERT INTO beer(id, beer_name, brewer, date_received) VALUES (2, 'Saratoga Pale Ale','Saratoga','2005-02-14');
-INSERT INTO beer(id, beer_name, brewer, date_received) VALUES (3, 'Sierra Nevada Pale Ale','Stones Throw Brewery','2007-05-14');
-INSERT INTO beer(id, beer_name, brewer, date_received) VALUES (4, 'Liberty Bell Ale','Anchor Brewing Company','2006-12-29');
-INSERT INTO beer(id, beer_name, brewer, date_received) VALUES (5, 'Guinness Stout','St. James Gate Brewery','2005-12-10');
-INSERT INTO beer(id, beer_name, brewer, date_received) VALUES (55, 'Sweetwater 420','Sweetwater','2006-12-10');
+INSERT INTO beer(id, beer_name, brewer, date_received) VALUES (1, 'Sprecher Root Beer','Sprecher Brewery','2012-12-09');
+INSERT INTO beer(id, beer_name, brewer, date_received) VALUES (2, 'Hanks Gourmet Root Beer','Hanks Gourmet Beverages','2013-02-19');
+INSERT INTO beer(id, beer_name, brewer, date_received) VALUES (3, 'Dads Root Beer','Hedinger Brands LLC','2012-05-14');
+INSERT INTO beer(id, beer_name, brewer, date_received) VALUES (4, 'Stewarts','Dr Pepper Snapple Group','2012-12-29');
+INSERT INTO beer(id, beer_name, brewer, date_received) VALUES (5, 'Old Dominion Root Beer','Old Dominion Brewery','2012-11-02');
+INSERT INTO beer(id, beer_name, brewer, date_received) VALUES (55, 'Hires','Dr Pepper Snapple Group','2012-06-18');
 
 INSERT INTO state (state, description) VALUES('AL','Alabama');
 INSERT INTO state (state, description) VALUES('AK','Alaska');
@@ -61,7 +61,26 @@ INSERT INTO state (state, description) VALUES('WI','Wisconsin');
 INSERT INTO state (state, description) VALUES('WY','Wyoming');
 
 
-INSERT INTO user(username, password) VALUES ('burke.cox','abc1234');
+INSERT INTO user(username, password) VALUES ('student00','Student00!');
+INSERT INTO user(username, password) VALUES ('student01','Student01!');
+INSERT INTO user(username, password) VALUES ('student02','Student02!');
+INSERT INTO user(username, password) VALUES ('student03','Student03!');
+INSERT INTO user(username, password) VALUES ('student04','Student04!');
+INSERT INTO user(username, password) VALUES ('student05','Student05!');
+INSERT INTO user(username, password) VALUES ('student06','Student06!');
+INSERT INTO user(username, password) VALUES ('student07','Student07!');
+INSERT INTO user(username, password) VALUES ('student08','Student08!');
+INSERT INTO user(username, password) VALUES ('student09','Student09!');
+INSERT INTO user(username, password) VALUES ('student10','Student10!');
+INSERT INTO user(username, password) VALUES ('student11','Student11!');
+INSERT INTO user(username, password) VALUES ('student12','Student12!');
+INSERT INTO user(username, password) VALUES ('student14','Student14!');
+INSERT INTO user(username, password) VALUES ('student15','Student15!');
+INSERT INTO user(username, password) VALUES ('student16','Student16!');
+INSERT INTO user(username, password) VALUES ('student17','Student17!');
+INSERT INTO user(username, password) VALUES ('student18','Student18!');
+INSERT INTO user(username, password) VALUES ('student19','Student19!');
+INSERT INTO user(username, password) VALUES ('student20','Student20!');
 INSERT INTO user(username, password) VALUES ('pduvall','password');
 INSERT INTO user(username, password) VALUES ('paul.duvall','password');
 INSERT INTO user(username, password) VALUES ('verify','verify');
