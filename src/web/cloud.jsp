@@ -31,7 +31,7 @@
 
 <div class="heading">
     <div class="shell">
-        <h2>Stelligent Cloud ROI Calculator</h2>
+        <h2>Online Brewery Manager</h2>
     </div>
 </div>
 
@@ -44,7 +44,6 @@
 <FORM action="/brewery/Controller" method="post">
 <INPUT TYPE="hidden" NAME="FROM_PAGE" VALUE="index">
 <INPUT TYPE="hidden" NAME="TO_PAGE" VALUE="beer">
-<h3> Online Brewery Manager </h3>
 <table align="center">
   <tr>
     <td><input type="text" name="username" id="username" value=""></td>
