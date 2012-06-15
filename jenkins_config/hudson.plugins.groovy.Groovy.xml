@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson.plugins.groovy.Groovy_-DescriptorImpl>
+  <helpRedirect/>
+  <instanceCounter>
+    <value>0</value>
+  </instanceCounter>
+  <allowMacro>false</allowMacro>
+  <installations/>
+  <installations2>
+    <hudson.plugins.groovy.GroovyInstallation>
+      <name>groovy</name>
+      <home>/usr/bin/groovy-1.8.2</home>
+      <properties/>
+    </hudson.plugins.groovy.GroovyInstallation>
+  </installations2>
+</hudson.plugins.groovy.Groovy_-DescriptorImpl>

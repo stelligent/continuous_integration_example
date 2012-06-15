@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<org.jenkinsci.plugins.snsnotify.AmazonSNSNotifier_-DescriptorImpl>
+  <helpRedirect/>
+  <awsAccessKey></awsAccessKey>
+  <awsSecretKey></awsSecretKey>
+  <defaultTopicArn></defaultTopicArn>
+</org.jenkinsci.plugins.snsnotify.AmazonSNSNotifier_-DescriptorImpl>

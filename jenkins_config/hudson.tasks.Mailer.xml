@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson.tasks.Mailer_-DescriptorImpl>
+  <helpRedirect/>
+  <hudsonUrl>http://ec2-204-236-228-3.compute-1.amazonaws.com:8080/jenkins/</hudsonUrl>
+  <smtpAuthUsername>buildservers@gmail.com</smtpAuthUsername>
+  <smtpAuthPassword>yVCStvXf+bkBmu40KCtFUpqmIJ0PmvCcmbwCQW09zBlcq3M7XiVzOrjCOL2Ucxt6Wb0fTOw/VjkQFHnDuuGF5uax9CP82wloxm1gyMAbXiPl0/nd6wj3+i3StTcPpG3RgG5OB2AcM11gPfllyO0K/Q==</smtpAuthPassword>
+  <adminAddress>webinars@stelligent.com</adminAddress>
+  <smtpHost>smtp.gmail.com</smtpHost>
+  <useSsl>true</useSsl>
+  <smtpPort>465</smtpPort>
+  <charset>UTF-8</charset>
+</hudson.tasks.Mailer_-DescriptorImpl>

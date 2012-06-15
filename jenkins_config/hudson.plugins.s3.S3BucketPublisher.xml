@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson.plugins.s3.S3BucketPublisher_-DescriptorImpl>
+  <helpRedirect/>
+  <profiles>
+    <hudson.plugins.s3.S3Profile>
+      <name>seashore</name>
+      <accessKey>AKIAICBUYOK6WFG73HRA</accessKey>
+      <secretKey>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</secretKey>
+    </hudson.plugins.s3.S3Profile>
+  </profiles>
+</hudson.plugins.s3.S3BucketPublisher_-DescriptorImpl>

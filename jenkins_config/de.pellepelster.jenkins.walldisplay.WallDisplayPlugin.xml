@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<de.pellepelster.jenkins.walldisplay.Configuration>
+  <theme>boss</theme>
+  <jenkinsTimeOut>15</jenkinsTimeOut>
+  <jenkinsUpdateInterval>20</jenkinsUpdateInterval>
+  <showDetails>true</showDetails>
+  <showBuildNumber>true</showBuildNumber>
+</de.pellepelster.jenkins.walldisplay.Configuration>

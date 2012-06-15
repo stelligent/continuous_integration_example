@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson.scm.SubversionSCM_-DescriptorImpl>
+  <helpRedirect/>
+  <generation>22</generation>
+  <credentials class="hashtable">
+    <entry>
+      <string>&lt;https://subversion.assembla.com:443&gt; Assembla Restricted Area</string>
+      <hudson.scm.SubversionSCM_-DescriptorImpl_-PasswordCredential>
+        <userName>paul.duvall</userName>
+        <password>RzZiSUdaUzRnTkZw</password>
+      </hudson.scm.SubversionSCM_-DescriptorImpl_-PasswordCredential>
+    </entry>
+  </credentials>
+  <workspaceFormat>8</workspaceFormat>
+  <validateRemoteUpToVar>false</validateRemoteUpToVar>
+  <storeAuthToDisk>true</storeAuthToDisk>
+</hudson.scm.SubversionSCM_-DescriptorImpl>

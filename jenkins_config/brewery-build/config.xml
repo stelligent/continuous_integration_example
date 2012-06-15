@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.SubversionSCM">
+    <locations>
+      <hudson.scm.SubversionSCM_-ModuleLocation>
+        <remote>https://subversion.assembla.com/svn/manatees/trunk/src/manatee-web</remote>
+        <local>.</local>
+      </hudson.scm.SubversionSCM_-ModuleLocation>
+    </locations>
+    <excludedRegions></excludedRegions>
+    <includedRegions></includedRegions>
+    <excludedUsers></excludedUsers>
+    <excludedRevprop></excludedRevprop>
+    <excludedCommitMessages></excludedCommitMessages>
+    <workspaceUpdater class="hudson.scm.subversion.UpdateUpdater"/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <com.g2one.hudson.grails.GrailsBuilder>
+      <targets>clean</targets>
+      <name>grails</name>
+      <grailsWorkDir></grailsWorkDir>
+      <projectWorkDir></projectWorkDir>
+      <projectBaseDir></projectBaseDir>
+      <serverPort></serverPort>
+      <properties></properties>
+      <forceUpgrade>false</forceUpgrade>
+      <nonInteractive>true</nonInteractive>
+    </com.g2one.hudson.grails.GrailsBuilder>
+    <com.g2one.hudson.grails.GrailsBuilder>
+      <targets>&quot;prod war wildtracks.war&quot;</targets>
+      <name>grails</name>
+      <grailsWorkDir></grailsWorkDir>
+      <projectWorkDir></projectWorkDir>
+      <projectBaseDir></projectBaseDir>
+      <serverPort></serverPort>
+      <properties></properties>
+      <forceUpgrade>false</forceUpgrade>
+      <nonInteractive>true</nonInteractive>
+    </com.g2one.hudson.grails.GrailsBuilder>
+  </builders>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>wildtracks.war, grails-app/migrations/**/*</artifacts>
+      <latestOnly>false</latestOnly>
+    </hudson.tasks.ArtifactArchiver>
+    <hudson.plugins.s3.S3BucketPublisher>
+      <profileName>seashore</profileName>
+      <entries>
+        <hudson.plugins.s3.Entry>
+          <bucket>sea2shore</bucket>
+          <sourceFile>wildtracks.war</sourceFile>
+        </hudson.plugins.s3.Entry>
+      </entries>
+    </hudson.plugins.s3.S3BucketPublisher>
+  </publishers>
+  <buildWrappers/>
+</project>

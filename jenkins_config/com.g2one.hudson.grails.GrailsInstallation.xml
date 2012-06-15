@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<com.g2one.hudson.grails.GrailsInstallation_-DescriptorImpl>
+  <helpRedirect/>
+  <installations>
+    <com.g2one.hudson.grails.GrailsInstallation>
+      <name>grails</name>
+      <home>/usr/bin/grails-1.3.7</home>
+      <properties/>
+    </com.g2one.hudson.grails.GrailsInstallation>
+  </installations>
+</com.g2one.hudson.grails.GrailsInstallation_-DescriptorImpl>
