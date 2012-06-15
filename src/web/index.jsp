@@ -24,7 +24,7 @@
     <div class="shell">
         <h1 id="logo" class="notext"><a href="http://stelligent.com/">Online Brewery Manager</a></h1>
 
-        <h2 class="slogan notext"><a href="http://stelligent.com/">Online Brewery Manager</a>
+        <h2 class="slogan notext"><a href="http://stelligent.com/">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Brewery Manager</a>
         </h2>
     </div>
 </div>
