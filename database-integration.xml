@@ -11,31 +11,30 @@
 		<import file="${basedir}/${common.configuration.file}" />
 
 	<target name="all" >
-		  <antcall target="db:create-database"/>
-		  	  <antcall target="db:create-tables"/>
-		  	  	  <antcall target="db:insert-data"/>
-		  	  	  	</target>
+      <antcall target="db:create-database"/>
+	  <antcall target="db:create-tables"/>
+	  <antcall target="db:insert-data"/>
+	</target>
 
 	<dependset>
-		  <srcfilelist dir="${basedir}" files="${environment}.properties, default.properties"/>
-		  	  <targetfileset dir="${filtered.sql.dir}"/>
-		  	  	</dependset>
+	  <srcfilelist dir="${basedir}" files="${environment}.properties, default.properties"/>
+	  <targetfileset dir="${filtered.sql.dir}"/>
+	</dependset>
 
 	<target name="filter-sql-files" description="Filter any *tokenized* .sql files">
-		  <echo>Filtering SQL files...</echo>
-		  	  <mkdir dir="${filtered.sql.dir}"/>
-		  	  	    <path id="database.dir.path">
-		  	  	    	      <pathelement path="${database.dir}"/>
-		  	  	    	      	    </path>
-		  	  	    	      	    	    <property name="database.dir.path" refid="database.dir.path"/>
-		  	  	    	      	    	    	    <copy todir="${filtered.sql.dir}" filtering="true">
-		  	  	    	      	    	    	    	      <fileset dir="${database.dir}" includes="*.sql" excludes=""/>
-		  	  	    	      	    	    	    	        	      <!--<filterset refid="all.filter.tokens"/>-->
-	      <filterset>
-	      	        <filter token="database.dir" value="${database.dir}"/>
-	      	                      </filterset>
-	      	                                  </copy>
-	      	                                  	    <replace file="${filtered.sql.dir}/insert-data.sql" token="\" value="/" />
+	  <echo>Filtering SQL files...</echo>
+      <mkdir dir="${filtered.sql.dir}"/>
+      <path id="database.dir.path">
+        <pathelement path="${database.dir}"/>
+      </path>
+      <property name="database.dir.path" refid="database.dir.path"/>
+      <copy todir="${filtered.sql.dir}" filtering="true">
+        <fileset dir="${database.dir}" includes="*.sql" excludes=""/>
+        <filterset>
+	      <filter token="database.dir" value="${database.dir}"/>
+        </filterset>
+	  </copy>
+	  <replace file="${filtered.sql.dir}/insert-data.sql" token="\" value="/" />
 	      	                                  	    	</target>
 
 	<target name="get-deps" unless="noget">
@@ -357,16 +356,15 @@
 															</property>
 																	<echo message="rollforward.fileset=${rollforward.fileset}">
 																			</echo>
-																					<sql
-																								driver="${db.driver}"
-																											url="${db.url}"
-																														userid="${db.username.system}"
-																																	password="${db.password.system}"
-																																				classpathref="db.lib.path"
-																																							delimiter=";">
-																																										<fileset refid="rollforward.fileset"/>
-																																												</sql>
-																																													</target>
+					<sql driver="${db.driver}"
+					  url="${db.url}"
+					  userid="${db.username.system}"
+					  password="${db.password.system}"
+                      classpathref="db.lib.path"
+					  delimiter=";">
+                      <fileset refid="rollforward.fileset"/>
+					</sql>
+    </target>
 
 	<target name="db:rollforward-0.1">
 			<sql
