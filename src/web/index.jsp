@@ -20,14 +20,6 @@
 
 </head>
 <body>
-<div class="header">
-    <div class="shell">
-        <h1 id="logo" class="notext"><a href="http://stelligent.com/">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Online Brewery Manager</a></h1>
-
-        <h2 class="slogan notext"><a href="http://stelligent.com/">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Brewery Manager</a>
-        </h2>
-    </div>
-</div>
 
 <div class="heading">
     <div class="shell">
