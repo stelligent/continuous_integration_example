@@ -23,7 +23,7 @@
 
 <div class="heading">
     <div class="shell">
-        <h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Brewery Manager</h2>
+        <h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Brewery Manager: Java, Ant/Maven, MySQL, Tomcat</h2>
     </div>
 </div>
 
