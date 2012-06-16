@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<project name="build-template" default="init" basedir=".">
+	<description>
+		 This is the master build file for the project. These scripts require Java, Ant, Database and SVN to work.
+	</description>
+	
+	<property name="target.dir" location="./target" />
+	
+	<target name="clean">
+      <echo message="in the clean target"
+	</target>
+
+	<target name="init" description="Sets up build are and initalizes variables" depends="clean">
+		<mkdir dir="${target.dir}" />
+	</target>
+
+</project>
