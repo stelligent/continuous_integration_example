@@ -207,7 +207,7 @@
 
 	<target name="run-code-duplication">
 		<echo message="Running code duplication checks" />
-		<ant inheritAll="true" inheritRefs="true" antfile="inspections.xml" target="run-simian" />
+		<!--><ant inheritAll="true" inheritRefs="true" antfile="inspections.xml" target="run-simian" />-->
 	</target>
 
 	<target name="run-cyclomatic-complexity">
