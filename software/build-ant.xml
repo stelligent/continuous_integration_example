@@ -211,7 +211,7 @@
 	</target>
 
 	<target name="run-cyclomatic-complexity">
-		<ant inheritAll="true" inheritRefs="true" antfile="inspections.xml" target="run-cyclomatic-complexity" />
+		<!--><ant inheritAll="true" inheritRefs="true" antfile="inspections.xml" target="run-cyclomatic-complexity" />-->
 	</target>
 
 	<target name="get-deps">
