@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <changeSet author="pduvall" id="1">
+        <comment>Create db objects.</comment>
+        <sqlFile path="db-install/mysql/1.0/createSchema.sql"/>
+    </changeSet>
+    <changeSet author="pduvall" id="2">
+        <comment>Insert initial data.</comment>
+        <sqlFile path="db-install/mysql/1.0/insertData.sql"/>
+    </changeSet>
+    <changeSet author="pduvall" id="3">
+        <comment>Insert field notes.</comment>
+        <sqlFile path="db-install/mysql/1.0/insertFieldNotes.sql"/>
+    </changeSet>
+    <changeSet author="pduvall" id="4">
+        <comment>Importing initial location data.</comment>
+        <sqlFile path="db-install/mysql/1.0/locations/20110304120156_44.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110307120101_45.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110310120136_46.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110313120208_47.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110316120112_48.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110319120059_49.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110322120109_50.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110325120741_51.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110328120229_52.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110331120154_53.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110403120103_54.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110406120129_55.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110409120250_56.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110412120144_57.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110415120210_58.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110418120247_59.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110421120132_60.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110424120102_61.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110427120130_62.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110430120308_63.sql"/>
+        <sqlFile path="db-install/mysql/1.0/locations/20110503120127_64.sql"/>
+    </changeSet>
+    <changeSet author="pduvall" id="5">
+       <comment>Updating manatee, tag and location information.</comment>
+       <sqlFile path="db-install/mysql/1.0/locations/data_0718.sql"/>
+       <sqlFile path="db-install/mysql/1.0/updates/1_updates_0807.sql"/>
+       <sqlFile path="db-install/mysql/1.0/updates/2_locations_0807.sql"/>
+       <sqlFile path="db-install/mysql/1.0/updates/3_updates_0906.sql"/>
+       <sqlFile path="db-install/mysql/1.0/updates/4_locations_0906.sql"/>
+       <sqlFile path="db-install/mysql/1.0/updates/5_locations_0926.sql"/>
+       <sqlFile path="db-install/mysql/1.0/updates/6_updates_0926.sql"/>
+       <sqlFile path="db-install/mysql/1.0/updates/7_updates_0930.sql"/>
+       <sqlFile path="db-install/mysql/1.0/updates/8_locations_0930.sql"/>
+       <sqlFile path="db-install/mysql/1.0/updates/9_locations_1003.sql"/>
+       <sqlFile path="db-install/mysql/1.0/updates/10_updates_1010.sql"/>
+       <sqlFile path="db-install/mysql/1.0/updates/11_locations_1010.sql"/>
+    </changeSet>
+    <changeSet author="pduvall" id="6">
+       <comment>Schema changes for import table, setting default value of MANUAL_IMPORT and updating locations.</comment>
+       <sqlFile path="db-install/mysql/1.0/updates/12_schema_updates.sql"/>
+    </changeSet>
+    <changeSet author="pduvall" id="7">
+       <comment>Update</comment>
+       <sqlFile path="db-install/mysql/1.0/updates/13_updates_1017.sql"/>
+    </changeSet>
+    <changeSet author="pduvall" id="8">
+       <comment>Add additional user accounts.</comment>
+       <sqlFile path="db-install/mysql/1.0/updates/14_insert_users.sql"/>
+    </changeSet>
+</databaseChangeLog>
+
+
+
