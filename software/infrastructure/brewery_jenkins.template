@@ -36,6 +36,11 @@
 	  "Description" : "Artifact Bucket",
 	  "Type" : "String",
 	  "Default" : "cdcourse"
+    },
+    "S3KeysBucket" : {
+	  "Description" : "Artifact Bucket",
+	  "Type" : "String",
+	  "Default" : "cd00creds"
     }
   },
   
@@ -144,13 +149,13 @@
 				"authentication" : "S3AccessCreds"
               },
 			  "/usr/share/tomcat6/.ssh/id_rsa" : { 
-                "source" : { "Fn::Join" : ["", ["https://s3.amazonaws.com/", { "Ref" : "S3Bucket" }, "/private/id_rsa"]]}, 
+                "source" : { "Fn::Join" : ["", ["https://s3.amazonaws.com/", { "Ref" : "S3KeysBucket" }, "/id_rsa"]]}, 
                 "mode" : "000600", 
                 "owner" : "tomcat",
                 "group" : "tomcat",
 				"authentication" : "S3AccessCreds"
               },
-			  "/usr/share/tomcat6/manatee_dev.pem" : { 
+			  "/usr/share/tomcat6/cd00.pem" : { 
                 "source" : "https://s3.amazonaws.com/cd00creds/cd00.pem",
                 "mode" : "000600", 
                 "owner" : "tomcat",
