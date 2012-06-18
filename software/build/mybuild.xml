@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project name="mybuild" default="all" basedir=".">
+
+  <property name="classes.dir" value="classes"/>
+  <property name="src.dir" value="src"/>
+	
+  <path id="project.class.path">
+    <pathelement location="." />
+	<pathelement location="${classes.dir}" />
+  </path>
+
+  <target name="all" depends="compile-src">
+  </target>
+
+  <target name="compile-src">
+    <mkdir dir="${classes.dir}"/>
+    <javac destdir="${classes.dir}" debug="true">
+      <src path="${src.dir}" />
+      <classpath refid="project.class.path"/>
+    </javac>
+  </target>
+</project>
