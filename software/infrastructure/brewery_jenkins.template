@@ -114,6 +114,7 @@
             "packages" : {
               "yum" : {
                 "tomcat6"       : [],
+				"git"           : [],
                 "subversion"    : [],
 				"gcc"			: [],
 				"libxslt-devel" : [],
