@@ -7,7 +7,7 @@
 	"S3Bucket" : {
 	  "Description" : "Public S3 bucket for storing artifacts",
       "Type" : "String",
-      "Default" : "sea2shore",
+      "Default" : "cdcourse",
       "ConstraintDescription" : "Must be a valid S3 Bucket"
 	}
   },
