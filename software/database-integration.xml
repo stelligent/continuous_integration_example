@@ -66,15 +66,15 @@
 		  	  	    	    	    	    	    	    	</target>
 
 	<target name="db:create-database" depends="filter-sql-files" description="CREATE the database (tablespaces and users)">
-		  <echo>Creating database...</echo>
-		  	  <sql driver="${db.driver}" 
-		  	  	    url="${db.url.system}" 
-		  	  	    	    userid="${db.username.system}" 
-		  	  	    	    	    password="${db.password.system}" 
-		  	  	    	    	    	    classpathref="db.lib.path" 
-		  	  	    	    	    	    	    src="${filtered.sql.dir}/create-database-mysql.sql" 
-		  	  	    	    	    	    	    	    delimiter=";"/>
-		  	  	    	    	    	    	    	    	</target>
+	  <echo>Creating database...</echo>
+	  <sql driver="${db.driver}" 
+	    url="${db.url.system}" 
+	    userid="${db.username.system}" 
+		password="${db.password.system}" 
+		classpathref="db.lib.path" 
+		src="${filtered.sql.dir}/create-database-mysql.sql" 
+		delimiter=";"/>
+    </target>
 
 	<target name="db:drop-tables" description="DROP db tables and cascade constraints">
 		  <echo>Dropping tables...</echo>
