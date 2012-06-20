@@ -254,7 +254,7 @@
 		
 		  "# Update Jenkins with versioned configuration\n",
 		  "rm -rf /usr/share/tomcat6/.jenkins\n",
-		  "git clone git@github.com:stelligent/continuous_integration_example.git /usr/share/tomcat6/.jenkins\n",
+		  "git clone git@github.com:stelligent/ciexample_jenkins.git /usr/share/tomcat6/.jenkins\n",
 		
 		  "# Installing Ruby 1.9.3 from RPM\n",
 		  "wget https://s3.amazonaws.com/stelligentlabs/resources/rpm/ruby-1.9.3p0-2.amzn1.x86_64.rpm\n",
