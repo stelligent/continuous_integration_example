@@ -3,23 +3,21 @@ require 'aws-sdk'
 load '/usr/share/tomcat6/scripts/config/aws.config'
 
 sdb = AWS::SimpleDB.new
-s3 = AWS::S3.new
 
-bucket = s3.buckets["cdbrewery"]
-object = bucket.objects["brewery.war"]
+set :sdb_domain, "automanateestack0"
 
 set :domain do
-  item = sdb.domains["test"].items["parameters"]
+  item = sdb.domains["#{sdb_domain}"].items["parameters"]
   item.attributes["domain"].values[0].to_s
 end
 
 set :artifact_bucket do
-  item = sdb.domains["test"].items['parameters']
+  item = sdb.domains["#{sdb_domain}"].items['parameters']
   item.attributes['artifact_bucket'].values[0].to_s
 end
 
 set :ip_address do
-  item = sdb.domains["test"].items['parameters']
+  item = sdb.domains["#{sdb_domain}"].items['parameters']
   item.attributes['ip_address'].values[0].to_s
 end
 
