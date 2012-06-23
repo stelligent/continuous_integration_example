@@ -1,0 +1,398 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09", 
+    "Description": "Template to launch an Amazon Linux instance and install/configure AWS command line tools.", 
+    "Mappings": {
+        "AWSInstanceType2Arch": {
+            "c1.medium": {
+                "Arch": "64"
+            }, 
+            "c1.xlarge": {
+                "Arch": "64"
+            }, 
+            "cc1.4xlarge": {
+                "Arch": "64"
+            }, 
+            "m1.large": {
+                "Arch": "64"
+            }, 
+			"m1.medium": {
+                "Arch": "64"
+            },
+            "m1.small": {
+                "Arch": "64"
+            }, 
+            "m1.xlarge": {
+                "Arch": "64"
+            }, 
+            "m2.2xlarge": {
+                "Arch": "64"
+            }, 
+            "m2.4xlarge": {
+                "Arch": "64"
+            }, 
+            "m2.xlarge": {
+                "Arch": "64"
+            }, 
+            "t1.micro": {
+                "Arch": "64"
+            }
+        }, 
+        "AWSRegionArch2AMI": {
+            "ap-northeast-1": {
+                "32": "ami-087acb09", 
+                "64": "ami-e47acbe5"
+            }, 
+            "ap-southeast-1": {
+                "32": "ami-b83374ea", 
+                "64": "ami-be3374ec"
+            }, 
+            "eu-west-1": {
+                "32": "ami-fd231b89", 
+                "64": "ami-f9231b8d"
+            }, 
+            "sa-east-1": {
+                "32": "ami-aa855bb7", 
+                "64": "ami-a6855bbb"
+            }, 
+            "us-east-1": {
+                "32": "ami-ed65ba84", 
+                "64": "ami-e565ba8c"
+            }, 
+            "us-west-1": {
+                "32": "ami-978cd4d2", 
+                "64": "ami-e78cd4a2"
+            }, 
+            "us-west-2": {
+                "32": "ami-38c64a08", 
+                "64": "ami-3ac64a0a"
+            }
+        }
+    }, 
+    "Outputs": {
+        "Instance": {
+            "Description": "DNS Name of the newly created EC2 instance", 
+            "Value": {
+                "Fn::GetAtt": [
+                    "Ec2Instance", 
+                    "PublicDnsName"
+                ]
+            }
+        }
+    }, 
+    "Parameters": {
+		"InstanceName": {
+			"Default": "Command Line Tools", 
+        "Description": "The name to tag this instance with.", 
+            "Type": "String"
+				},
+        "InstanceType": {
+            "Default": "m1.medium", 
+            "Description": "EC2 instance type, e.g. t1.micro, m1.small, m1.medium, m1.large, etc.", 
+            "Type": "String"
+        }, 
+        "KeyName": {
+            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the web server", 
+            "Type": "String"
+        }
+    }, 
+    "Resources": {
+        "AdminUser": {
+            "Properties": {
+                "Path": "/", 
+                "Policies": [
+                    {
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Action": "*",
+                                    "Effect": "Allow",
+                                    "Resource": "*"
+                                }
+                            ]
+                        }, 
+                        "PolicyName": "root"
+                    }
+                ]
+            }, 
+            "Type": "AWS::IAM::User"
+        }, 
+        "Ec2Instance": {
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "files": {
+                            "/home/ec2-user/.aws-credentials": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "", 
+                                        [
+                                            "AWSAccessKeyId=", 
+                                            {
+                                                "Ref": "HostKeys"
+                                            }, 
+                                            "\n", 
+                                            "AWSSecretKey=", 
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "HostKeys", 
+                                                    "SecretAccessKey"
+                                                ]
+                                            }, 
+                                            "\n"
+                                        ]
+                                    ]
+                                }, 
+                                "group": "ec2-user", 
+                                "mode": "000600", 
+                                "owner": "ec2-user"
+                            },
+                           "/home/ec2-user/.s3cfg": {
+                                "content": { 
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "[default]",
+                                            "\n",
+                                            "access_key = ", 
+                                            {
+                                                "Ref": "HostKeys"
+                                            }, 
+                                            "\n", 
+                                            "secret_key = ", 
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "HostKeys", 
+                                                    "SecretAccessKey"
+                                                ]
+                                            }, 
+                                            "\n"
+                                        ]
+                                    ]
+                                }, 
+                                "group": "ec2-user",
+                                "mode": "000600",
+                                "owner": "ec2-user"
+                            },
+                           "/home/ec2-user/credentials.json": {
+                                "content": { 
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "{",
+                                            "\n",
+                                            "\"access-id\":\"", 
+                                            {
+                                                "Ref": "HostKeys"
+                                            }, 
+                                            "\",",
+                                            "\n", 
+                                            "\"private-key\":\"", 
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "HostKeys", 
+                                                    "SecretAccessKey"
+                                                ]
+                                            },
+                                            "\",",
+                                            "\n",
+                                            "\"key-pair\":\"",
+                                            {
+                                              "Ref": "KeyName"
+                                            },
+                                            "\",",
+                                           "\n",
+                                            "\"key-pair-file\":\"", 
+                                            { "Fn::Join": [ "", [ "~/", { "Ref": "KeyName" }, ".pem" ] ] },
+                                            "\",",
+                                           "\n",
+                                            "\"region\":\"", 
+                                            {
+                                              "Ref": "AWS::Region"
+                                            }, 
+                                            "\",",
+                                           "\n",
+                                           "}",
+                                          "\n"
+                                        ]
+                                    ]
+                                }, 
+                                "group": "ec2-user",
+                                "mode": "000600",
+                                "owner": "ec2-user"
+                            },
+                           "/home/ec2-user/config.yml": {
+                                "content": { 
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "access_key_id: ", 
+                                            {
+                                                "Ref": "HostKeys"
+                                            }, 
+                                            "\n", 
+                                            "secret_access_key: ",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "HostKeys",
+                                                    "SecretAccessKey"
+                                                ]
+                                            },
+                                          "\n"
+                                        ]
+                                    ]
+                                }, 
+                                "group": "ec2-user",
+                                "mode": "000600",
+                                "owner": "ec2-user"
+                            }
+                        }, 
+                        "sources" : {
+                          "/usr/local/bin/s3cmd" : "http://github.com/s3tools/s3cmd/zipball/v1.1.0-beta3",
+                          "/usr/local/bin" : "http://ftp.wayne.edu/apache//maven/binaries/apache-maven-3.0.4-bin.tar.gz",
+                          "/usr/local/bin/elastic-map-reduce-ruby" : "http://elasticmapreduce.s3.amazonaws.com/elastic-mapreduce-ruby.zip"
+                        },
+                        "packages": {
+                            "rubygems" : {
+                              "rake" : [],
+                              "dnsruby" : [],
+                              "mechanize" : [],
+                              "chef" : [],
+                              "aws-sdk" : [],
+                              "systemu" : []
+                            },
+                            "yum": {
+                                "aws-apitools-cfn.noarch": [],
+                                "python-boto.noarch": [],
+                                "git": [],
+                                "java-1.6.0-openjdk-devel": [],
+                                "gcc-c++"    : [],
+                                "ruby-devel" : [],
+                                "make"       : [],
+                                "autoconf"   : [],
+                                "automake"   : [],
+                                "rubygems"   : [],
+                                "libxslt-devel": [],
+                                "libxml2-devel": []
+                            }
+                        }
+                    }
+                }
+            }, 
+            "Properties": {
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSRegionArch2AMI", 
+                        {
+                            "Ref": "AWS::Region"
+                        }, 
+                        {
+                            "Fn::FindInMap": [
+                                "AWSInstanceType2Arch", 
+                                {
+                                    "Ref": "InstanceType"
+                                }, 
+                                "Arch"
+                            ]
+                        }
+                    ]
+                }, 
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                }, 
+                "KeyName": {
+                    "Ref": "KeyName"
+                }, 
+                "SecurityGroups": [
+                    {
+                        "Ref": "Ec2SecurityGroup"
+                    }
+                ], 
+								"Tags" : [
+									{
+										"Key" : "Name",
+										"Value" : { "Ref": "InstanceName" }
+									}
+								],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "", 
+                            [
+                                "#!/bin/bash\n",
+                                "yum update -y\n",
+
+                                "# Helper function\n",
+                                "function error_exit \n", 
+                                "{\n", 
+                                "  /opt/aws/bin/cfn-signal -e 1 -r \"$1\" '", { "Ref": "WaitHandle" }, "'\n",
+                                "  exit 1\n", 
+                                "}\n",
+
+                                "# Install packages and write files in AWS::CloudFormation::Init\n",
+                                "/opt/aws/bin/cfn-init -s ", { "Ref" : "AWS::StackName" }, " -r Ec2Instance ",
+                                "    --access-key ",  { "Ref" : "HostKeys" },
+                                "    --secret-key ", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]},
+                                "    --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
+
+                                "echo 'export AWS_ACCESS_KEY=", { "Ref" : "HostKeys" }, "'  >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY' >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export AWS_SECRET_ACCESS_KEY=", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]}, "'  >> /home/ec2-user/.bash_profile\n",
+
+                                "echo 'export AWS_CLOUDFORMATION_HOME=/opt/aws/apitools/cfn' >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export PATH=$AWS_CLOUDFORMATION_HOME/bin:$PATH' >> /home/ec2-user/.bash_profile\n", 
+                                "echo 'export PATH=/opt/aws/bin:$PATH' >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export AWS_CREDENTIALS_FILE=/home/ec2-user/.aws-credentials' >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export AWS_CREDENTIAL_FILE=$AWS_CREDENTIALS_FILE' >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export PATH=/usr/local/bin/apache-maven-3.0.4/bin:$PATH' >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export PATH=/usr/local/bin/elastic-map-reduce-ruby:$PATH' >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export JAVA_HOME=/etc/alternatives/java_sdk' >> /home/ec2-user/.bash_profile\n",
+
+                                "chmod +x /usr/local/bin/elastic-map-reduce-ruby/elastic-mapreduce\n",
+
+                                "# Install s3cmd\n",
+                                "cd /usr/local/bin/s3cmd\n",
+                                "python setup.py install\n",
+
+                                "# All is well so signal success\n",
+                                "/opt/aws/bin/cfn-signal -e 0 -r \"cfn-int setup complete\" '", { "Ref" : "WaitHandle" }, "'\n"
+                            ]
+                        ]
+                    }
+                }
+            }, 
+            "Type": "AWS::EC2::Instance"
+        },
+        "Ec2SecurityGroup": {
+            "Properties": {
+                "GroupDescription": "HTTP and SSH access", 
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp": "0.0.0.0/0", 
+                        "FromPort": "22", 
+                        "IpProtocol": "tcp", 
+                        "ToPort": "22"
+                    }
+                ]
+            }, 
+            "Type": "AWS::EC2::SecurityGroup"
+        }, 
+        "HostKeys": {
+            "Properties": {
+                "UserName": {
+                    "Ref": "AdminUser"
+                }
+            }, 
+            "Type": "AWS::IAM::AccessKey"
+        },
+        "WaitCondition" : {
+            "Type" : "AWS::CloudFormation::WaitCondition",
+            "Properties" : {
+                "Handle" : { "Ref" : "WaitHandle" },
+                "Timeout" : "600"
+            }
+        },
+        "WaitHandle": {
+            "Type": "AWS::CloudFormation::WaitConditionHandle"
+        }
+    }
+}
