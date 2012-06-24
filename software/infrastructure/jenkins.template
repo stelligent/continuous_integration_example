@@ -356,9 +356,6 @@
     "InstanceIPAddress" : {
       "Value" : { "Ref" : "IPAddress" }
     },
-	"SecretAccessKey" : {
-		"Value" : {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]}
-	},
 	"JenkinsURL" : {
       "Value" : { "Fn::Join" : ["", ["http://", { "Ref" : "IPAddress" }, ":8080/jenkins"]] },
       "Description" : "URL for newly created Jenkins app"
