@@ -25,14 +25,14 @@
 	"PrivateBucket" : {
       "Description" : "S3 bucket for storing credentials",
       "Type" : "String",
-      "Default" : "cd29creds",
+      "Default" : "cd000creds",
       "ConstraintDescription" : "Must be a valid S3 Bucket"
     },
 
 	"PublicBucket" : {
 	  "Description" : "S3 bucket for storing build artifacts",
       "Type" : "String",
-      "Default" : "cd29artifacts",
+      "Default" : "cd000artifacts",
       "ConstraintDescription" : "Must be a valid S3 Bucket"
 	}
   },
@@ -80,20 +80,6 @@
 		]
       }
     },
-    
-    "DeploymentQueue" : {
-	  "Type" : "AWS::SQS::Queue",
-	  "Properties" : {
-		"VisibilityTimeout" : "0"
-	  }
-	},
-	
-	"CFNStackQueue" : {
-	  "Type" : "AWS::SQS::Queue",
-	  "Properties" : {
-		"VisibilityTimeout" : "0"
-	  }
-	},
 
     "PrivateBucketPolicy" : {
       "Type" : "AWS::S3::BucketPolicy",
@@ -140,7 +126,10 @@
 				"libyaml-devel"			: []
               }
             },
-			
+
+			"sources" : {
+			  "/usr/share/tomcat6/scripts/" : "https://s3.amazonaws.com/sea2shore/jenkins_utilities.tar.gz"
+            },
 
 			"files" : {
 	          "/usr/share/tomcat6/webapps/jenkins.war" : { 
@@ -148,41 +137,6 @@
 		        "mode"   : "000500", 
 		        "owner"  : "tomcat",
 		        "group"  : "tomcat" 
-		      },
-		
-		      "/usr/share/tomcat6/scripts/aws/sqs_receive_message.rb" : { 
-			  	"source" : { "Fn::Join" : ["", ["https://s3.amazonaws.com/stelligentlabs/scripts/aws/sqs_receive_message.rb"]]},
-		        "mode"   : "000500", 
-		        "owner"  : "tomcat",
-		        "group"  : "tomcat"
-		      },
-		
-			  "/usr/share/tomcat6/scripts/aws/sqs_send_message.rb" : { 
-				"source" : { "Fn::Join" : ["", ["https://s3.amazonaws.com/stelligentlabs/scripts/aws/sqs_send_message.rb"]]},
-		        "mode"   : "000500", 
-		        "owner"  : "tomcat",
-		        "group"  : "tomcat"
-		      },
-		
-			  "/usr/share/tomcat6/scripts/aws/terminate.rb" : { 
-		        "source" : { "Fn::Join" : ["", ["https://s3.amazonaws.com/stelligentlabs/scripts/aws/terminate.rb"]]},
-		        "mode"   : "000500", 
-		        "owner"  : "tomcat",
-		        "group"  : "tomcat"
-		      },
-		
-		  	  "/usr/share/tomcat6/scripts/aws/create_config_domain.rb" : { 
-		        "source" : { "Fn::Join" : ["", ["https://s3.amazonaws.com/stelligentlabs/scripts/aws/create_config_domain.rb"]]},
-		        "mode"   : "000500", 
-		        "owner"  : "tomcat",
-		        "group"  : "tomcat"
-		      },
-		
-			  "/usr/share/tomcat6/scripts/aws/showback_domain.rb" : { 
-		        "source" : { "Fn::Join" : ["", ["https://s3.amazonaws.com/stelligentlabs/scripts/aws/showback_domain.rb"]]},
-		        "mode"   : "000500", 
-		        "owner"  : "tomcat",
-		        "group"  : "tomcat"
 		      },
 		
 			  "/usr/share/tomcat6/.ssh/known_hosts" : {
@@ -286,7 +240,7 @@
 		
 		  "# Update Build Jenkins Job config\n",
 		  "sed -i 's@<bucket>.*</bucket>@<bucket>", { "Ref" : "PublicBucket" }, "</bucket>@' /usr/share/tomcat6/.jenkins/jobs/Build/config.xml\n",
-		  "sed -i 's@<bucket>.*</bucket>@<bucket>", { "Ref" : "PublicBucket" }, "</bucket>@' /usr/share/tomcat6/.jenkins/jobs/Puppet/config.xml\n",
+		  "sed -i 's@<bucket>.*</bucket>@<bucket>", { "Ref" : "PublicBucket" }, "</bucket>@' /usr/share/tomcat6/.jenkins/jobs/ShanghaiBuild/config.xml\n",
 		  "sed -i 's@<bucket>.*</bucket>@<bucket>", { "Ref" : "PublicBucket" }, "/templates</bucket>@' /usr/share/tomcat6/.jenkins/jobs/Templates/config.xml\n",
 		  "sed -i 's@<bucket>.*</bucket>@<bucket>", { "Ref" : "PublicBucket" }, "/scripts/aws</bucket>@' /usr/share/tomcat6/.jenkins/jobs/JenkinsConfig/config.xml\n",
 		
@@ -338,30 +292,17 @@
         "Handle" : { "Ref" : "WaitHandle" },
         "Timeout" : "1200"
       }
-    }          
+    }
   },
   
   "Outputs" : {
     "Instance": {
         "Description": "DNS Name of the newly created EC2 instance", 
-        "Value": {
-            "Fn::GetAtt": [
-                "WebServer", 
-                "PublicDnsName"
-            ]
-        }
+        "Value": { "Fn::GetAtt": [ "WebServer", "PublicDnsName" ] }
     },
 	"JenkinsURL" : {
       "Value" : { "Fn::Join" : ["", ["http://", {"Fn::GetAtt": ["WebServer", "PublicDnsName"] }, ":8080/jenkins"]] },
       "Description" : "URL for newly created Jenkins app"
-    },
-	"DeploymentQueueName" : {
-	  "Description" : "Name newly created Deployment SQS Queue",
-	  "Value" : { "Fn::GetAtt" : ["DeploymentQueue", "QueueName"]}
-	},
-	"CFNStackQueueName" : {
-	  "Description" : "Name newly created CFN Stack SQS Queue",
-	  "Value" : { "Fn::GetAtt" : ["CFNStackQueue", "QueueName"]}
-	}
+    }
   }
 }
