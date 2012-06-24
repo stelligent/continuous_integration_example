@@ -8,7 +8,7 @@
     "KeyName" : {
       "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the instances",
       "Type" : "String",
-	  "Default" : "cd00",
+	  "Default" : "cd29",
       "MinLength": "1",
       "MaxLength": "64",
       "AllowedPattern" : "[-_ a-zA-Z0-9]*",
@@ -25,14 +25,14 @@
 	"PrivateBucket" : {
       "Description" : "S3 bucket for storing credentials",
       "Type" : "String",
-      "Default" : "cd00creds",
+      "Default" : "cd29creds",
       "ConstraintDescription" : "Must be a valid S3 Bucket"
     },
 
 	"PublicBucket" : {
 	  "Description" : "S3 bucket for storing build artifacts",
       "Type" : "String",
-      "Default" : "cd00artifacts",
+      "Default" : "cd29artifacts",
       "ConstraintDescription" : "Must be a valid S3 Bucket"
 	}
   },
@@ -314,17 +314,6 @@
       }
     },
 
-    "IPAddress" : {
-      "Type" : "AWS::EC2::EIP"
-    },
-    
-    "IPAssoc" : {
-      "Type" : "AWS::EC2::EIPAssociation",
-      "Properties" : {
-        "InstanceId" : { "Ref" : "WebServer" },
-        "EIP" : { "Ref" : "IPAddress" }
-       }
-    },
     
     "FrontendGroup" : {
       "Type" : "AWS::EC2::SecurityGroup",
@@ -353,11 +342,17 @@
   },
   
   "Outputs" : {
-    "InstanceIPAddress" : {
-      "Value" : { "Ref" : "IPAddress" }
+    "Instance": {
+        "Description": "DNS Name of the newly created EC2 instance", 
+        "Value": {
+            "Fn::GetAtt": [
+                "WebServer", 
+                "PublicDnsName"
+            ]
+        }
     },
 	"JenkinsURL" : {
-      "Value" : { "Fn::Join" : ["", ["http://", { "Ref" : "IPAddress" }, ":8080/jenkins"]] },
+      "Value" : { "Fn::Join" : ["", ["http://", {"Fn::GetAtt": ["WebServer", "PublicDnsName"] }, ":8080/jenkins"]] },
       "Description" : "URL for newly created Jenkins app"
     },
 	"DeploymentQueueName" : {
