@@ -21,24 +21,6 @@
       "Default" : "c1.medium",
       "ConstraintDescription" : "must be a valid EC2 instance type."
     },
-
-	"ApplicationName" : {
-	  "Description" : "CNAME for the application",
-	  "Type" : "String",
-	  "Default" : "target"
-	},
-	
-	"HostedZone" : {
-	  "Description" : "Domain to use",
-	  "Type" : "String",
-	  "Default" : "devopscloud.com"
-	},
-	
-	"EnvironmentType" : {
-	  "Description" : "Mode for rails to run in",
-	  "Type" : "String",
-	  "Default" : "development"
-	},
 	
 	"PrivateBucket" : {
       "Description" : "S3 bucket for storing credentials",
@@ -110,20 +92,6 @@
       }
     },
 
-	"Domain" : {
-      "Type" : "AWS::Route53::RecordSetGroup",
-	  "Properties" : {
-	    "HostedZoneName" : { "Fn::Join" : [ "", [ {"Ref" : "HostedZone"}, "." ]]},
-	    "RecordSets" : [
-		  {
-			"Name" : { "Fn::Join" : ["", [ { "Ref" : "ApplicationName" }, ".", { "Ref" : "HostedZone" }, "." ]]},
-			"Type" : "A",
-			"TTL"  : "900",
-			"ResourceRecords" : [ { "Ref" : "IPAddress" } ]
-		  }]
-	  }
-	},
-
     "WebServer": {  
       "Type": "AWS::EC2::Instance",
  	  "DependsOn" : "PrivateBucketPolicy",
@@ -132,13 +100,12 @@
           "config" : {
             "packages" : {
               "yum" : {
-                "puppet"   : []
+				"mysql-server" : [],
+				"mysql"        : [],
+				"ant"		   : [],
+				"tomcat6"	   : []
               }
             },
-
-			"sources" : {
-				"/home/ec2-user/" : { "Fn::Join" : ["", ["https://s3.amazonaws.com/stelligentlabs/puppet.tar.gz"]]}
-			},
 
 			"files" : {
 			  "/home/ec2-user/id_rsa.pub" : {
@@ -147,52 +114,7 @@
                "owner"  : "root",
                "group"  : "root",
 			   "authentication" : "S3AccessCreds"
-              },
-			  "/home/ec2-user/nodes.pp" : {
-                "content" : { "Fn::Join" : ["", [
-				  "node default {\n",
-					"include system\n",
-				    "include bundler\n",
-				    "include passenger\n",
-				    "include sqlite\n",
-				    "include git\n",
-					"include httpd\n",
-				  "}"
-                  ]]},
-                "mode"   : "000500",
-                "owner"  : "root",
-                "group"  : "root"
-              },
-			  
-
-			  "/etc/httpd/conf/virtualhosts" : {
-	            "content" : { "Fn::Join" : ["", [
-	              "NameVirtualHost *:80\n",
-	              "<VirtualHost *:80>\n",
-	              "ServerName ", { "Fn::Join" : [ ".", [ { "Ref" : "ApplicationName" }, { "Ref" : "HostedZone" }]]}, "\n",
-	              "ServerAlias ", { "Fn::Join" : [ ".", [ { "Ref" : "ApplicationName" }, { "Ref" : "HostedZone" }]]}, "\n",
-				  "RailsEnv ", {"Ref" : "EnvironmentType"}, "\n",
-				  "DocumentRoot /var/www/rails/public\n",
-				  "<Directory /var/www/rails/public>\n",
-				     "AllowOverride all\n",
-				     "Options -MultiViews\n",
-				  "</Directory>\n",
-	              "</VirtualHost>\n"
-	            ]]},
-	                "mode"   : "000500",
-	                "owner"  : "root",
-	                "group"  : "root"
-	          },
-			  "/etc/httpd/conf/passenger" : {
-	            "content" : { "Fn::Join" : ["", [
-	              "LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-3.0.13/ext/apache2/mod_passenger.so\n",
-	              "PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-3.0.13\n",
-	              "PassengerRuby /usr/bin/ruby\n"
-	            ]]},
-	                "mode"   : "000500",
-	                "owner"  : "root",
-	                "group"  : "root"
-	          }
+              }
 			}
           }
         },
@@ -224,12 +146,9 @@
           "    --secret-key ", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]},
           "    --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
 
-		  "# Build environment using Puppet\n",
-          "puppet apply --modulepath=/home/ec2-user/modules /home/ec2-user/nodes.pp\n",
-		
-		  "# Add in virtual hosts config\n",
-		  "cat /etc/httpd/conf/passenger >> /etc/httpd/conf/httpd.conf\n",
-		  "cat /etc/httpd/conf/virtualhosts >> /etc/httpd/conf/httpd.conf\n",
+		  "sudo service mysqld start\n",
+		  "/usr/bin/mysqladmin -u root password 'mysql'\n",
+		  "sudo service tomcat6 start \n",
 		
 		  "# Add Public key for passwordless authentication from Jenkins Instance\n",
 		  "cat /home/ec2-user/id_rsa.pub >> /home/ec2-user/.ssh/authorized_keys\n",
@@ -243,18 +162,6 @@
 		  "date > /home/ec2-user/stoptime"
 		]]}}
       }
-    },
-
-    "IPAddress" : {
-      "Type" : "AWS::EC2::EIP"
-    },
-    
-    "IPAssoc" : {
-      "Type" : "AWS::EC2::EIPAssociation",
-      "Properties" : {
-        "InstanceId" : { "Ref" : "WebServer" },
-        "EIP" : { "Ref" : "IPAddress" }
-       }
     },
     
     "FrontendGroup" : {
@@ -291,14 +198,6 @@
     },
     "ArtifactBucket" : {
       "Value" : { "Ref" : "PublicBucket" }
-    },
-    "Domain" : {
-      "Value" : { "Fn::Join" : ["", [{ "Ref" : "ApplicationName" }, ".", { "Ref" : "HostedZone" }]] },
-      "Description" : "Full domain"
-    },
-	"SampleApp" : {
-      "Value" : { "Fn::Join" : ["", ["http://", { "Ref" : "ApplicationName" }, ".", { "Ref" : "HostedZone" }, "/"]] },
-      "Description" : "URL for newly created Sample App"
     }
   }
 }

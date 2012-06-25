@@ -115,15 +115,18 @@
           "config" : {
             "packages" : {
               "yum" : {
-                "java-1.6.0-openjdk"    : [],
-                "tomcat6"   			: [],
-				"git"					: [],
-				"make"					: [],
-				"gcc"					: [],
-				"sqlite-devel"			: [],
-				"libxml2-devel"			: [],
-				"libxslt-devel"			: [],
-				"libyaml-devel"			: []
+                "tomcat6"   			  : [],
+				"ant"					  : [],
+				"java-1.6.0-openjdk-devel": [],
+				"mysql-server"			  : [],
+				"mysql"					  : [],
+				"git"					  : [],
+				"make"					  : [],
+				"gcc"					  : [],
+				"sqlite-devel"			  : [],
+				"libxml2-devel"			  : [],
+				"libxslt-devel"			  : [],
+				"libyaml-devel"			  : []
               }
             },
 
@@ -202,6 +205,9 @@
           "    --access-key ",  { "Ref" : "HostKeys" },
           "    --secret-key ", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]},
           "    --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
+
+		  "sudo service mysqld start\n",
+		  "/usr/bin/mysqladmin -u root password 'mysql'\n",
 		  
 		  "# Copy Github credentials to root ssh directory\n",
 		  "cp /usr/share/tomcat6/.ssh/* /root/.ssh/\n",
