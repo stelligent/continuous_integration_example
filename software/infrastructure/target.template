@@ -191,7 +191,7 @@
   
   "Outputs" : {
     "InstanceIPAddress" : {
-      "Value" : { "Ref" : "IPAddress" }
+      "Value" : {"Fn::GetAtt": ["WebServer", "PublicDnsName"]},
     },
 	"StackName" : {
       "Value" : { "Ref" : "AWS::StackName" }
