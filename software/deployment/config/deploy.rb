@@ -4,11 +4,11 @@ load '/usr/share/tomcat6/scripts/config/aws.config'
 
 sdb = AWS::SimpleDB.new
 
-set :sdb_domain, "automanateestack0"
+set :sdb_domain, "cd00"
 
 set :domain do
-  item = sdb.domains["#{sdb_domain}"].items["parameters"]
-  item.attributes["domain"].values[0].to_s
+  item = sdb.domains["#{sdb_domain}"].items['parameters']
+  item.attributes['ip_address'].values[0].to_s
 end
 
 set :artifact_bucket do
@@ -62,9 +62,7 @@ namespace :deploy do
     run "sudo service tomcat6 restart"
   end
   
-  # after "deploy:setup", "deploy:wildtracks_config"
-  # after "deploy:wildtracks_config", "deploy:httpd_conf"
-  # after "deploy:httpd_conf", "deploy:deploy"
+  after "deploy:setup", "deploy:deploy"
   after "deploy:deploy", "deploy:restart"
 end
 
