@@ -146,9 +146,9 @@
           "    --secret-key ", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]},
           "    --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
 
-		  "sudo service mysqld start\n",
+		  "service mysqld start\n",
 		  "/usr/bin/mysqladmin -u root password 'mysql'\n",
-		  "sudo service tomcat6 start \n",
+		  "service tomcat6 start \n",
 		
 		  "# Add Public key for passwordless authentication from Jenkins Instance\n",
 		  "cat /home/ec2-user/id_rsa.pub >> /home/ec2-user/.ssh/authorized_keys\n",

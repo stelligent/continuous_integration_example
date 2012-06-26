@@ -205,9 +205,6 @@
           "    --access-key ",  { "Ref" : "HostKeys" },
           "    --secret-key ", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]},
           "    --region ", { "Ref" : "AWS::Region" }, " || error_exit 'Failed to run cfn-init'\n",
-
-		  "sudo service mysqld start\n",
-		  "/usr/bin/mysqladmin -u root password 'mysql'\n",
 		  
 		  "# Copy Github credentials to root ssh directory\n",
 		  "cp /usr/share/tomcat6/.ssh/* /root/.ssh/\n",
@@ -235,6 +232,9 @@
 		  "gem install net-ssh\n",
 		  "gem install capistrano\n",
 		
+		  "service mysqld start\n",
+	      "/usr/bin/mysqladmin -u root password 'mysql'\n",
+			
 		  "# Add Tomcat user to sudoers and disable tty\n",
 		  "echo \"tomcat ALL=(ALL) NOPASSWD:ALL\" >> /etc/sudoers\n",
 		  "echo \"Defaults:%tomcat !requiretty\" >> /etc/sudoers\n",
