@@ -1,14 +1,14 @@
-Feature: Scripted provisioning of target environment
-    As a developer
+Feature: Scripted deployment of Java web application
+    As an operations engineer
     I would like a scripted deployment
-    so that I can assume the deployment will work the same way everytime
+    so that I know the deployment will work the same way everytime
 
     Background:
         Given I am sshed into the environment
 
-    Scenario: Is the rails application deployed into the correct directory?
-        When I run "ls -las /var/www/rails/"
-        Then I should see "Gemfile"
+    Scenario: Is the Java application deployed into the correct directory?
+        When I run "ls -las /usr/share/tomcat6/webapps"
+        Then I should see "brewery"
     
     Scenario Outline: Have all the required gems been installed?
         When I run "gem list"
